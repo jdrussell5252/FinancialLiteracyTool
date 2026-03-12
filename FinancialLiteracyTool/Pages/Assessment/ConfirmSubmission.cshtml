@@ -1,0 +1,45 @@
+﻿@page
+@model FinancialLiteracyTool.Pages.Assessment.ConfirmSubmissionModel
+@{
+    ViewData["Title"] = "Confirm Submission";
+}
+
+<div class="container mt-5">
+    <div class="card shadow-sm">
+        <div class="card-body text-center">
+
+            <h2 class="mb-2">Confirm Assessment Submission</h2>
+
+            <p class="text-muted">
+                Answered <strong>@Model.AnsweredCount</strong> of <strong>@Model.TotalQuestions</strong> questions.
+            </p>
+
+            @if (!Model.AllAnswered)
+            {
+                <div class="alert alert-warning mt-3">
+                    <strong>Incomplete assessment.</strong><br />
+                    You must answer all questions before submitting. Please go back and complete the unanswered questions.
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info mt-3">
+                    Everything looks complete. You can submit when ready.
+                </div>
+            }
+
+            <form method="post" class="mt-4">
+                <button type="submit"
+                        class="btn btn-danger me-2"
+                        disabled="@(!Model.AllAnswered)">
+                    Yes, Submit Assessment
+                </button>
+
+                <a asp-page="/Assessment/TakeAssessment" class="btn btn-secondary">
+                    Go Back
+                </a>
+            </form>
+
+        </div>
+    </div>
+</div>

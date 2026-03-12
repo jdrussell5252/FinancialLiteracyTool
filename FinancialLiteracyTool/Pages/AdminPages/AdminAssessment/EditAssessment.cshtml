@@ -1,0 +1,82 @@
+﻿@page
+@model FinancialLiteracyTool.Pages.AdminPages.AdminAssessment.EditAssessmentModel
+@{
+    var selectedIds = Model.SelectedQuestionIDs ?? new List<int>();
+}
+
+<div class="row text-center">
+    <div class="col-12">
+        <label class="form-label fs-1" id="LabelText">Edit Assessment</label>
+    </div>
+</div>
+
+<section class="container mt-4">
+
+    <!--====================== MAIN CARD FORM ======================-->
+    <form method="post" class="card border-0 shadow-sm p-4">
+
+        <input asp-for="EditAssessment.AssessmentID" type="hidden" />
+
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+        <div class="row mb-3">
+            <!-- Assessment Name -->
+            <div class="col-md-6">
+                <label asp-for="EditAssessment.AssessmentName" class="form-label fw-bold">Assessment Name</label>
+                <input asp-for="EditAssessment.AssessmentName" class="form-control" maxlength="100" />
+                <span asp-validation-for="EditAssessment.AssessmentName" class="text-danger"></span>
+            </div>
+
+            <!-- Assessment Area -->
+            <div class="col-md-6">
+                <label class="form-label fw-bold">Assessment Area</label>
+                <select asp-for="SelectedAssessmentAreaID"
+                        class="form-select"
+                        asp-items="Model.AssessmentArea"
+                        onchange="this.form.action='?handler=LoadQuestions'; this.form.submit();">
+                    <option value="">-- Select area --</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Questions -->
+        <div class="row mb-3">
+            <div class="col-12">
+                <label class="form-label fw-bold">Questions</label>
+                <div class="list-group">
+                    @if (Model.QuestionOptions?.Any() ?? false)
+                    {
+                        foreach (var q in Model.QuestionOptions)
+                        {
+                            <label class="list-group-item d-flex align-items-center">
+                                <input type="checkbox" name="SelectedQuestionIDs" value="@q.Value"
+                                       @(selectedIds.Contains(int.Parse(q.Value)) ? "checked" : "") />
+                                <span class="ms-2">@q.Text</span>
+                            </label>
+                        }
+                    }
+                    else
+                    {
+                        <div class="text-muted p-2">No questions available for the selected area.</div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="d-flex gap-2">
+            <!-- Save explicitly posts to the default OnPost handler -->
+            <button type="submit" class="btn btn-primary" formaction="?handler="><i class="bi bi-save"></i> Save</button>
+            <a asp-page="BrowseAssessments" class="btn btn-secondary"><i class="bi bi-arrow-left"></i> Cancel</a>
+            <a asp-page="AddAssessment" class="btn btn-outline-primary ms-auto"><i class="bi bi-plus-square"></i> Add New</a>
+        </div>
+    </form>
+    <!--====================== END MAIN CARD FORM ======================-->
+
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+
+

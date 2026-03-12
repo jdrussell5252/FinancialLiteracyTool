@@ -1,0 +1,43 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<div class="full-page-image">
+
+    <div class="overlay-card">
+        <h1>Financial Literacy Assessment</h1>
+        <p>
+            Test your knowledge in budgeting, credit, saving, and investing.
+            Get your personalized financial score in minutes.
+        </p>
+
+        <a asp-page="/Assessment/TakeAssessment" class="btn-main">Take Assessment</a>
+
+        <br><br>
+
+        <a asp-page="/Account/Profile" class="btn-secondary">View Profile</a>
+    </div>
+
+    <div class="home-features">
+
+        <div class="feature-card">
+            <h3><i class="bi bi-graph-up"></i> Financial Score</h3>
+            <p>Get a personalized score based on your financial knowledge.</p>
+        </div>
+
+        <div class="feature-card">
+            <h3><i class="bi bi-lightbulb"></i> Smart Insights</h3>
+            <p>Learn where you can improve your budgeting and saving.</p>
+        </div>
+
+        <div class="feature-card">
+            <h3><i class="bi bi-bar-chart"></i> Track Progress</h3>
+            <p>Retake the assessments and improve over time.</p>
+        </div>
+
+    </div>
+
+</div>
+

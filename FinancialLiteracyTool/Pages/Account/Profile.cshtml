@@ -1,0 +1,25 @@
+﻿@page
+@model FinancialLiteracyTool.Pages.Account.ProfileModel
+@{
+}
+
+<div class="row text-center">
+    <div class="col-12">
+        <label class="form-label fs-1" id="LabelText">Profile</label>
+    </div>
+</div>
+
+<!-- User Profile Section -->
+<section class="container text-center mt-5 profile-header">
+    <img src="@Model.CurrentProfile.SystemUserProfileImagePath" alt="User Picture" class="profile-pic mb-3" />
+    <h2 id="userName" class="text-dark">@Model.CurrentProfile.SystemUserName</h2>
+    <!--<p id="userBio" class="text-light">This is your profile bio. Tell people a little about yourself.</p>-->
+    <!--<button class="btn btn-outline-light mt-2" onclick="toggleEdit()">Edit Profile</button>-->
+    <a asp-page="/Account/EditProfile" asp-route-id="@Model.CurrentProfile.SystemUserID" class="btn btn-primary">Edit Profile</a>
+</section>
+
+<!-- Account Settings -->
+<section class="container text-center mt-5">
+    <h4 class="text-dark">Account Settings</h4>
+    <a asp-page="/Account/EditPassword" asp-route-id="@Model.CurrentProfile.SystemUserID" class="btn btn-primary">Change Password</a>
+</section>

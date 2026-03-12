@@ -1,0 +1,61 @@
+﻿@page
+@model FinancialLiteracyTool.Pages.AdminPages.AdminAssessment.AddAssessmentModel
+@{
+}
+
+<div class="row text-center">
+    <div class="col-12">
+        <label class="form-label fs-1" id="LabelText">Add Assessment</label>
+    </div>
+</div>
+
+<form method="post">
+
+    <div class="row">
+
+        <!--===================Assessment Name Textbox==================-->
+        <div class="row">
+            <div class="col-4">
+                <label asp-for="NewAssessment.AssessmentName" class="form-label" id="LabelText">Assessment Name:</label>
+            </div>
+            <div class="col-12">
+                <input asp-for="NewAssessment.AssessmentName" type="text" class="form-control" />
+                <span asp-validation-for="NewAssessment.AssessmentName" class="text-danger"></span>
+            </div>
+        </div>
+        <!--===================End of Assessment Name Textbox==================-->
+
+        <!--===================Assessment Area Textbox==================-->
+        <div class="row">
+            <div class="col-4">
+                <label asp-for="NewAssessment.AssessmentName" class="form-label" id="LabelText">Assessment Area:</label>
+            </div>
+            <div class="col-12">
+                <select asp-for="SelectedAssessmentAreaID"
+                        asp-items="Model.AssessmentArea"
+                        class="form-control"
+                        onchange="location.href='?areaId=' + this.value;">
+                </select>
+            </div>
+        </div>
+        <!--===================End of Assessment Area Textbox==================-->
+        @if (Model.SelectedAssessmentAreaID.HasValue)
+        {
+            <label class="form-label mt-3">Questions in this area</label>
+            <select asp-for="SelectedQuestionIDs"
+                    asp-items="Model.QuestionOptions"
+                    class="form-select"
+                    multiple>
+            </select>
+            <span asp-validation-for="SelectedQuestionIDs" class="text-danger"></span>
+        }
+
+        <!--===================Submit Button==================-->
+        <div class="row my-2">
+            <div class="col-12">
+                <button type="submit" class="form-control btn btn-primary"> Confirm </button>
+            </div>
+        </div>
+        <!--=================End of Submit Button==================-->
+    </div>
+</form>

@@ -1,0 +1,30 @@
+﻿@page
+@model FinancialLiteracyTool.Pages.AdminPages.Users.EditUserIsAdminModel
+@{
+}
+
+<div class="row text-center">
+    <div class="col-12">
+        <label class="form-label fs-1" id="LabelText">Edit User Is Admin</label>
+    </div>
+</div>
+
+<form method="post" enctype="multipart/form-data">
+    <div class="row my-2">
+        <div class="col-4">
+            <label asp-for="Users.IsAdmin" class="form-label" id="LabelText">Role:</label>
+        </div>
+        <div class="col-12">
+            <select asp-for="Users.IsAdmin" class="form-control">
+                <option value="true">True</option>
+                <option value="false">False</option>
+            </select>
+            <span asp-validation-for="Users.IsAdmin" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="row my-2">
+        <div class="col-12">
+            <button type="submit" class="form-control btn btn-primary">Confirm Edit</button>
+        </div>
+    </div>
+</form>

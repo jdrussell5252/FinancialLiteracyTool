@@ -1,0 +1,27 @@
+﻿@page
+@model FinancialLiteracyTool.Pages.AdminPages.Users.EditSystemUsernameModel
+@{
+}
+
+<div class="row text-center">
+    <div class="col-12">
+        <label class="form-label fs-1" id="LabelText">Edit Profile</label>
+    </div>
+</div>
+
+<form method="post" enctype="multipart/form-data">
+    <div class="row my-2">
+        <div class="col-12">
+            <label asp-for="Profile.SystemUserName" class="form-label" id="LabelText">Change Username:</label>
+        </div>
+        <div class="col-12">
+            <input asp-for="Profile.SystemUserName" type="text" class="form-control" />
+            <span asp-validation-for="Profile.SystemUserName" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="row my-2">
+        <div class="col-12">
+            <button type="submit" class="form-control btn btn-primary">Confirm Edit</button>
+        </div>
+    </div>
+</form>

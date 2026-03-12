@@ -1,0 +1,92 @@
+﻿@page
+@model FinancialLiteracyTool.Pages.AdminPages.Users.BrowseUsersModel
+@{
+}
+
+<div class="container mt-4">
+
+    <div class="row text-center mb-4">
+        <div class="col-12">
+            <h1>Browse Users</h1>
+        </div>
+    </div>
+
+    <!-- Add Button -->
+    <div class="row mb-3">
+        <div class="col-12">
+            <a asp-page="AddUser" class="btn btn-primary">
+                <i class="bi bi-plus-square"></i> Add User
+            </a>
+        </div>
+    </div>
+
+    <!-- Error Message -->
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+
+    @if (Model.Users.Count != 0)
+    {
+
+        <div class="row">
+
+            @foreach (var u in Model.Users)
+            {
+                <div class="col-md-6 col-lg-4 mb-4">
+
+                    <div class="card shadow-sm h-100">
+
+                        <div class="card-body">
+
+                            <!-- Name -->
+                            <h5 class="card-title mb-2">
+                                @u.UserFName @u.UserLName
+                            </h5>
+
+                            <!-- User ID -->
+                            <p class="text-muted">
+                                User ID: @u.UserID
+                            </p>
+
+                        </div>
+
+                        <div class="card-footer d-flex justify-content-between">
+
+                            <!-- Edit -->
+                            <a asp-page="/AdminPages/Users/EditSystemUsername"
+                               asp-route-id="@u.UserID"
+                               class="btn btn-sm btn-primary">
+                                <i class="bi bi-pencil-square"></i> Edit
+                            </a>
+
+                            <!-- Delete -->
+                            <form method="post" asp-page-handler="Delete">
+                                <input type="hidden" name="id" value="@u.UserID" />
+
+                                <button onclick="return confirm('Are you sure?')"
+                                        class="btn btn-sm btn-danger">
+                                    <i class="bi bi-trash3"></i>
+                                </button>
+                            </form>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            }
+
+        </div>
+
+    }
+    else
+    {
+        <div class="text-center mt-4">
+            <h4>No users yet.</h4>
+        </div>
+    }
+
+</div>

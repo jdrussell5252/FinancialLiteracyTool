@@ -1,0 +1,30 @@
+﻿@page
+@model FinancialLiteracyTool.Pages.Assessment.SubmissionSuccessModel
+@{
+    ViewData["Title"] = "Submission Successful";
+}
+
+<div class="container mt-5">
+    <div class="card shadow-sm">
+        <div class="card-body text-center">
+
+            <h2 class="mb-2 text-success">Submission Successful</h2>
+
+            <p class="text-muted">
+                Your assessment has been submitted successfully.
+            </p>
+
+            <div class="alert alert-success mt-3">
+                <strong>Thank you!</strong><br />
+                Your responses have been recorded and will be reviewed.
+            </div>
+
+            <div class="mt-4">
+                <a asp-page="/Index" class="btn btn-primary">
+                    Return to Home
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>

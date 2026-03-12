@@ -1,0 +1,102 @@
+﻿@page
+@model FinancialLiteracyTool.Pages.Assessment.TakeAssessmentModel
+@{
+}
+
+@foreach (var q in Model.Questions.Take(30))
+{
+    <div class="mb-4">
+        <div class="fw-bold">(@q.QuestionID) @q.QuestionText </div>
+
+        @foreach (var c in Model.Choices.Where(x => x.QuestionID == q.QuestionID))
+        {
+            // Make ID unique so labels work correctly
+            var safeChoice = c.QuestionChoiceText.Replace(" ", "_").Replace("\"", "").Replace("'", "");
+            var inputId = $"q{q.QuestionID}_{safeChoice}";
+
+            <div>
+                <input type="radio"
+                       id="@inputId"
+                       name="q_@q.QuestionID"
+                       value="@c.QuestionChoiceText" />
+                <label for="@inputId">@c.QuestionChoiceText</label>
+            </div>
+        }
+    </div>
+}
+
+<a asp-page="/Assessment/ConfirmSubmission"
+   class="btn btn-primary"
+   role="button"
+   id="finishBtn">
+    Finish Assessment
+</a>
+
+<script>
+    // Save answers into sessionStorage as the user selects them
+    document.querySelectorAll('input[type="radio"]').forEach(r => {
+        r.addEventListener('change', () => {
+            const qId = r.name.replace("q_", ""); // name="q_12" -> "12"
+            const answers = JSON.parse(sessionStorage.getItem("answers") || "{}");
+            answers[qId] = r.value;
+            sessionStorage.setItem("answers", JSON.stringify(answers));
+        });
+    });
+
+    // Before going to ConfirmSubmission, POST answers to server so it can set TempData["AnswersJson"]
+    document.getElementById("finishBtn").addEventListener("click", async (e) => {
+        e.preventDefault();
+
+        const answers = sessionStorage.getItem("answers") || "{}";
+
+        const res = await fetch("@Url.Page("/Assessment/TakeAssessment", "SaveAnswers")", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "RequestVerificationToken": document.querySelector('input[name="__RequestVerificationToken"]')?.value
+            },
+            body: answers
+        });
+
+        if (res.ok) {
+            window.location.href = "@Url.Page("/Assessment/ConfirmSubmission")";
+        } else {
+            alert("Could not save answers. Please try again.");
+        }
+    });
+</script>
+<script>
+    function restoreAnswers() {
+        const answers = JSON.parse(sessionStorage.getItem("answers") || "{}");
+
+        // answers is like { "12": "Choice text", "13": "Choice text" }
+        Object.keys(answers).forEach(qId => {
+            const value = answers[qId];
+
+            // radio group name is name="q_12"
+            const radios = document.querySelectorAll(`input[type="radio"][name="q_${qId}"]`);
+            radios.forEach(r => {
+                if (r.value === value) r.checked = true;
+            });
+        });
+    }
+
+    // Save answers on change (same idea you already have)
+    document.querySelectorAll('input[type="radio"]').forEach(r => {
+        r.addEventListener('change', () => {
+            const qId = r.name.replace("q_", "");
+            const answers = JSON.parse(sessionStorage.getItem("answers") || "{}");
+            answers[qId] = r.value;
+            sessionStorage.setItem("answers", JSON.stringify(answers));
+        });
+    });
+
+    // Restore as soon as page loads
+    restoreAnswers();
+</script>
+
+
+@* Needed for antiforgery token *@
+<form method="post" style="display:none;">
+    @Html.AntiForgeryToken()
+</form>

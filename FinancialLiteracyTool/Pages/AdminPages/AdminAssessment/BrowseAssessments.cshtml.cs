@@ -54,6 +54,8 @@ namespace FinancialLiteracyTool.Pages.AdminPages.AdminAssessment
             }
         }//End of 'OnGet'.
 
+        //public IActionResult OnPostDelete(int id) { }
+
         private void PopulateAssessments()
         {
             using (SqlConnection conn = new SqlConnection(AppHelper.GetDBConnectionString()))

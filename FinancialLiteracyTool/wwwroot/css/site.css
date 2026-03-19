@@ -201,3 +201,9 @@ body {
 .card-footer {
     background: #f8f9fa;
 }
+
+.delete-btn {
+    background-color: #FF0000;
+    border-color: darkred;
+    color: white;
+}

@@ -1,6 +1,5 @@
 using FinancialLiteracyTool.Model.Questions;
 using FinancialLiteracyTool.MyAppHelper;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -9,13 +8,17 @@ using System.Security.Claims;
 
 namespace FinancialLiteracyTool.Pages.AdminPages.Questions
 {
-    [Authorize]
-    [BindProperties]
-    public class EditQuestionAreaModel : PageModel
+    public class EditQuestionModel : PageModel
     {
         public bool IsAdmin { get; set; }
-        public List<SelectListItem> Questions { get; set; } = new List<SelectListItem>();
+        public QuestionView Questions { get; set; } = new QuestionView();
+        public List<SelectListItem> QuestionArea { get; set; } = new List<SelectListItem>();
         public int SelectedQuestionAreaID { get; set; }
+        public List<SelectListItem> TypeOfQuestions { get; set; } = new List<SelectListItem>();
+        public int SelectedQuestionTypeID { get; set; }
+        public List<string> Choices { get; set; } = new();
+        public int? CorrectChoiceIndex { get; set; }
+        public bool? TrueFalseCorrect { get; set; }
         public void OnGet(int id)
         {
             // Safely access the NameIdentifier claim
@@ -30,20 +33,39 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Questions
 
             PopulateCurrentQuestionArea(id);
             PopulateQuestionAreaList();
+            PopulateQuestionText(id);
+            PopulateCurrentQuestionType(id);
+            PopulateQuestionTypeList();
         }// End of 'OnGet'.
 
         public IActionResult OnPost(int id)
-        { 
+        {
             if (ModelState.IsValid)
             {
                 using (SqlConnection conn = new SqlConnection(AppHelper.GetDBConnectionString()))
                 {
-                    string cmdText = "UPDATE Question SET AreaID = @AreaID WHERE QuestionID = @QuestionID;";
+                    string cmdText = "UPDATE Question SET QuestionText = @QuestionText WHERE QuestionID = @QuestionID;";
+                    SqlCommand cmd = new SqlCommand(cmdText, conn);
+                    cmd.Parameters.AddWithValue("@QuestionText", Questions.QuestionText);
+                    cmd.Parameters.AddWithValue("@QuestionID", id);
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+
+                    /*string cmdText = "UPDATE Question SET AreaID = @AreaID WHERE QuestionID = @QuestionID;";
                     SqlCommand cmd = new SqlCommand(cmdText, conn);
                     cmd.Parameters.AddWithValue("@AreaID", SelectedQuestionAreaID);
                     cmd.Parameters.AddWithValue("@QuestionID", id);
                     conn.Open();
                     cmd.ExecuteNonQuery();
+
+                    string cmdText = "UPDATE Question SET QuestionTypeID = @QuestionTypeID WHERE QuestionID = @QuestionID;";
+                    SqlCommand cmd = new SqlCommand(cmdText, conn);
+                    cmd.Parameters.AddWithValue("@QuestionTypeID", SelectedQuestionTypeID);
+                    cmd.Parameters.AddWithValue("@QuestionID", id);
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                    
+                    */
                 }
                 return RedirectToPage("BrowseQuestions");
             }
@@ -53,6 +75,29 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Questions
                 return Page();
             }
         }//End of 'OnPost'.
+
+        private void PopulateQuestionText(int id)
+        {
+            using (SqlConnection conn = new SqlConnection(AppHelper.GetDBConnectionString()))
+            {
+                string query = "SELECT QuestionID, QuestionText FROM Question WHERE QuestionID = @QuestionID";
+                SqlCommand cmd = new SqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("@QuestionID", id);
+                conn.Open();
+                SqlDataReader reader = cmd.ExecuteReader();
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        Questions = new QuestionView
+                        {
+                            QuestionID = reader.GetInt32(0),
+                            QuestionText = reader.GetString(1)
+                        };
+                    }
+                }
+            }
+        }//End of 'PopulateQuestionText'.
 
         private void PopulateCurrentQuestionArea(int id)
         {
@@ -87,12 +132,52 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Questions
                             Value = reader["AreaID"].ToString(),
                             Text = $"{reader["AreaName"]}"
                         };
-                        Questions.Add(question);
+                        QuestionArea.Add(question);
 
                     }
                 }
             }
         }//End of 'PopulateQuestionAreaList'.
+
+        private void PopulateCurrentQuestionType(int id)
+        {
+            using (SqlConnection conn = new SqlConnection(AppHelper.GetDBConnectionString()))
+            {
+                string sql = "SELECT QuestionTypeID FROM Question WHERE QuestionID = @QuestionID";
+                SqlCommand cmd = new SqlCommand(sql, conn);
+                cmd.Parameters.AddWithValue("@QuestionID", id);
+
+                conn.Open();
+                var result = cmd.ExecuteScalar();
+
+                if (result != null)
+                    SelectedQuestionTypeID = Convert.ToInt32(result);
+            }
+        }//End of 'PopulateCurrentQuestionType'.
+
+        private void PopulateQuestionTypeList()
+        {
+            using (SqlConnection conn = new SqlConnection(AppHelper.GetDBConnectionString()))
+            {
+                string query = "SELECT * FROM QuestionType";
+                SqlCommand cmd = new SqlCommand(query, conn);
+                conn.Open();
+                SqlDataReader reader = cmd.ExecuteReader();
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        var question = new SelectListItem
+                        {
+                            Value = reader["QuestionTypeID"].ToString(),
+                            Text = $"{reader["TypeName"]}"
+                        };
+                        TypeOfQuestions.Add(question);
+
+                    }
+                }
+            }
+        }//End of 'PopulateQuestionTypeList'.
 
         /*--------------------ADMIN PRIV----------------------*/
         private void CheckIfUserIsAdmin(int userId)
@@ -118,5 +203,5 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Questions
             }
         }//End of 'CheckIfUserIsAdmin'.
         /*--------------------ADMIN PRIV----------------------*/
-    }// End of 'EditQuestionArea' Class.
-}// End of 'namespace'.
+    }
+}

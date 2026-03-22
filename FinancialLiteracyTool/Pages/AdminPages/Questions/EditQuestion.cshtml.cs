@@ -8,6 +8,7 @@ using System.Security.Claims;
 
 namespace FinancialLiteracyTool.Pages.AdminPages.Questions
 {
+    [BindProperties]
     public class EditQuestionModel : PageModel
     {
         public bool IsAdmin { get; set; }
@@ -19,6 +20,7 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Questions
         public List<string> Choices { get; set; } = new();
         public int? CorrectChoiceIndex { get; set; }
         public bool? TrueFalseCorrect { get; set; }
+
         public void OnGet(int id)
         {
             // Safely access the NameIdentifier claim
@@ -36,6 +38,7 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Questions
             PopulateQuestionText(id);
             PopulateCurrentQuestionType(id);
             PopulateQuestionTypeList();
+            PopulateQuestionChoices(id);
         }// End of 'OnGet'.
 
         public IActionResult OnPost(int id)
@@ -179,6 +182,44 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Questions
             }
         }//End of 'PopulateQuestionTypeList'.
 
+        private void PopulateQuestionChoices(int questionId)
+        {
+            Choices = new List<string>();
+
+            using (SqlConnection conn = new SqlConnection(AppHelper.GetDBConnectionString()))
+            {
+                string query = @"
+            SELECT QuestionChoiceText, IsCorrect
+            FROM QuestionChoices
+            WHERE QuestionID = @QuestionID
+            ORDER BY ChoiceID";
+
+                SqlCommand cmd = new SqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("@QuestionID", questionId);
+
+                conn.Open();
+                SqlDataReader reader = cmd.ExecuteReader();
+
+                int index = 0;
+                while (reader.Read())
+                {
+                    Choices.Add(reader["QuestionChoiceText"]?.ToString() ?? "");
+
+                    if (reader["IsCorrect"] != DBNull.Value && Convert.ToBoolean(reader["IsCorrect"]))
+                    {
+                        CorrectChoiceIndex = index;
+                    }
+
+                    index++;
+                }
+            }
+
+            while (Choices.Count < 4)
+            {
+                Choices.Add(string.Empty);
+            }
+        }
+
         /*--------------------ADMIN PRIV----------------------*/
         private void CheckIfUserIsAdmin(int userId)
         {
@@ -203,5 +244,5 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Questions
             }
         }//End of 'CheckIfUserIsAdmin'.
         /*--------------------ADMIN PRIV----------------------*/
-    }
-}
+    }// End of 'EditQuestion' Class.
+}// End of 'namespace'.

@@ -46,7 +46,7 @@
                 <label class="form-label" id="LabelText">Choice 1:</label>
             </div>
             <div class="col-12">
-                <input name="Choices[0]" type="text" class="form-control" />
+                <input asp-for="Choices[0]" type="text" class="form-control" />
             </div>
         </div>
 
@@ -55,7 +55,7 @@
                 <label class="form-label" id="LabelText">Choice 2:</label>
             </div>
             <div class="col-12">
-                <input name="Choices[1]" type="text" class="form-control" />
+                <input asp-for="Choices[1]" type="text" class="form-control" />
             </div>
         </div>
 
@@ -64,7 +64,7 @@
                 <label class="form-label" id="LabelText">Choice 3:</label>
             </div>
             <div class="col-12">
-                <input name="Choices[2]" type="text" class="form-control" />
+                <input asp-for="Choices[2]" type="text" class="form-control" />
             </div>
         </div>
 
@@ -73,7 +73,7 @@
                 <label class="form-label" id="LabelText">Choice 4:</label>
             </div>
             <div class="col-12">
-                <input name="Choices[3]" type="text" class="form-control" />
+                <input asp-for="Choices[3]" type="text" class="form-control" />
             </div>
         </div>
 
@@ -82,19 +82,19 @@
                 <label class="form-label" id="LabelText">Correct Answer:</label>
 
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="CorrectChoiceIndex" value="0">
+                    <input class="form-check-input" type="radio" asp-for="CorrectChoiceIndex" value="0" />
                     <label class="form-check-label">Choice 1</label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="CorrectChoiceIndex" value="1">
+                    <input class="form-check-input" type="radio" asp-for="CorrectChoiceIndex" value="1" />
                     <label class="form-check-label">Choice 2</label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="CorrectChoiceIndex" value="2">
+                    <input class="form-check-input" type="radio" asp-for="CorrectChoiceIndex" value="2" />
                     <label class="form-check-label">Choice 3</label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="CorrectChoiceIndex" value="3">
+                    <input class="form-check-input" type="radio" asp-for="CorrectChoiceIndex" value="3" />
                     <label class="form-check-label">Choice 4</label>
                 </div>
 

@@ -1,0 +1,161 @@
+﻿@page
+@model FinancialLiteracyTool.Pages.AdminPages.Questions.EditQuestionModel
+@{
+}
+
+<div class="row text-center">
+    <div class="col-12">
+        <label class="form-label fs-1" id="LabelText">Edit Question</label>
+    </div>
+</div>
+
+<form method="post" enctype="multipart/form-data">
+    <div class="row my-2">
+        <div class="col-12">
+            <label asp-for="Questions.QuestionText" class="form-label" id="LabelText">Question Text:</label>
+        </div>
+        <div class="col-12">
+            <input asp-for="Questions.QuestionText" type="text" class="form-control" />
+            <span asp-validation-for="Questions.QuestionText" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="col-6 mt-2">
+        <label asp-for="SelectedQuestionAreaID" class="form-label" id="LabelText">Question Area:</label>
+    </div>
+
+    <div class="col-12">
+        <select asp-for="SelectedQuestionAreaID" asp-items="Model.QuestionArea" class="form-control">
+        </select>
+        <span asp-validation-for="SelectedQuestionAreaID" class="text-danger"></span>
+    </div>
+
+    <div class="col-6 mt-2">
+        <label asp-for="SelectedQuestionTypeID" class="form-label" id="LabelText">Question Type:</label>
+    </div>
+
+    <div class="col-12">
+        <select asp-for="SelectedQuestionTypeID" asp-items="Model.TypeOfQuestions" id="questionTypeSelect" class="form-control">
+        </select>
+        <span asp-validation-for="SelectedQuestionTypeID" class="text-danger"></span>
+    </div>
+
+    <div id="mcChoices" style="display:none;">
+        <div class="row mt-3">
+            <div class="col-4">
+                <label class="form-label" id="LabelText">Choice 1:</label>
+            </div>
+            <div class="col-12">
+                <input asp-for="Choices[0]" type="text" class="form-control" />
+            </div>
+        </div>
+
+        <div class="row mt-2">
+            <div class="col-4">
+                <label class="form-label" id="LabelText">Choice 2:</label>
+            </div>
+            <div class="col-12">
+                <input asp-for="Choices[1]" type="text" class="form-control" />
+            </div>
+        </div>
+
+        <div class="row mt-2">
+            <div class="col-4">
+                <label class="form-label" id="LabelText">Choice 3:</label>
+            </div>
+            <div class="col-12">
+                <input asp-for="Choices[2]" type="text" class="form-control" />
+            </div>
+        </div>
+
+        <div class="row mt-2">
+            <div class="col-4">
+                <label class="form-label" id="LabelText">Choice 4:</label>
+            </div>
+            <div class="col-12">
+                <input asp-for="Choices[3]" type="text" class="form-control" />
+            </div>
+        </div>
+
+        <div class="row mt-2">
+            <div class="col-12">
+                <label class="form-label" id="LabelText">Correct Answer:</label>
+
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" asp-for="CorrectChoiceIndex" value="0" />
+                    <label class="form-check-label">Choice 1</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" asp-for="CorrectChoiceIndex" value="1" />
+                    <label class="form-check-label">Choice 2</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" asp-for="CorrectChoiceIndex" value="2" />
+                    <label class="form-check-label">Choice 3</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" asp-for="CorrectChoiceIndex" value="3" />
+                    <label class="form-check-label">Choice 4</label>
+                </div>
+
+                <span asp-validation-for="CorrectChoiceIndex" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+
+    <div id="tfChoices" style="display:none;">
+        <div class="row mt-3">
+            <div class="col-12">
+                <div class="form-text">True/False will be auto-created as choices.</div>
+            </div>
+        </div>
+
+        <div class="form-check">
+            <input class="form-check-input" type="radio" asp-for="TrueFalseCorrect" value="true">
+            <label class="form-check-label">True</label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="radio" asp-for="TrueFalseCorrect" value="false">
+            <label class="form-check-label">False</label>
+        </div>
+
+        <span asp-validation-for="TrueFalseCorrect" class="text-danger"></span>
+    </div>
+
+    <div class="row my-2">
+        <div class="col-12">
+            <button type="submit" class="form-control btn btn-primary">Confirm Edit</button>
+        </div>
+    </div>
+</form>
+
+<script>
+    function toggleChoiceUI() {
+        const select = document.getElementById('questionTypeSelect');
+        if (!select) return;
+
+        const selectedText = (select.options[select.selectedIndex]?.text || "").toLowerCase();
+
+        const mc = document.getElementById('mcChoices');
+        const tf = document.getElementById('tfChoices');
+
+        const isMultiple = selectedText.includes("multiple");
+        const isTrueFalse = selectedText.includes("truefalse");
+
+        if (isMultiple) {
+            mc.style.display = "block";
+            tf.style.display = "none";
+        } else if (isTrueFalse) {
+            mc.style.display = "none";
+            tf.style.display = "block";
+        } else {
+            mc.style.display = "none";
+            tf.style.display = "none";
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        toggleChoiceUI();
+        document.getElementById('questionTypeSelect').addEventListener('change', toggleChoiceUI);
+    });
+</script>

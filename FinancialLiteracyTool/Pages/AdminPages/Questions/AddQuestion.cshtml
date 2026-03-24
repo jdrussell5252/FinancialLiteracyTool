@@ -124,8 +124,19 @@
                     <div class="form-text">True/False will be auto-created as choices.</div>
                 </div>
             </div>
+
+            <div class="form-check">
+                <input class="form-check-input" type="radio" asp-for="TrueFalseCorrect" value="true">
+                <label class="form-check-label">True</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" asp-for="TrueFalseCorrect" value="false">
+                <label class="form-check-label">False</label>
+            </div>
+
+            <span asp-validation-for="TrueFalseCorrect" class="text-danger"></span>
         </div>
-        <!--===================End of Question Choices Textbox==================-->
+        <!--===================End of Question Textbox==================-->
 
         <!--===================Submit Button==================-->
         <div class="row my-2">

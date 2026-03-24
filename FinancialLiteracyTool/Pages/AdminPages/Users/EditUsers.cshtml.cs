@@ -13,7 +13,6 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Users
     {
         public bool IsAdmin { get; set; }
         public ProfileView Profile { get; set; }
-        public List<SelectListItem> TrueFalse = new List<SelectListItem>();
 
         public void OnGet(int id)
         {
@@ -98,11 +97,6 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Users
                 {
                     while (reader.Read())
                     {
-                        /*Profile = new ProfileView
-                        {
-                            SystemUserFirstName = reader.GetString(0),
-                            SystemUserLastName = reader.GetString(1)
-                        };*/
                         Profile.SystemUserFirstName = reader.GetString(0);
                         Profile.SystemUserLastName = reader.GetString(1);
                     }

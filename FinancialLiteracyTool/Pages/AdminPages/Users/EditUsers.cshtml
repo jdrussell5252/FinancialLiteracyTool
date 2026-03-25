@@ -1,0 +1,57 @@
+﻿@page
+@model FinancialLiteracyTool.Pages.AdminPages.Users.EditUsersModel
+@{
+}
+
+<div class="container mt-4">
+    <div class="row text-center">
+        <div class="col-12">
+            <label class="form-label fs-1" id="LabelText">Edit User</label>
+        </div>
+    </div>
+
+    <form method="post" enctype="multipart/form-data">
+        <div class="row my-2">
+            <div class="col-12">
+                <label asp-for="Profile.SystemUserFirstName" class="form-label" id="LabelText">Change First Name:</label>
+            </div>
+            <div class="col-12">
+                <input asp-for="Profile.SystemUserFirstName" type="text" class="form-control" />
+                <span asp-validation-for="Profile.SystemUserFirstName" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="row my-2">
+            <div class="col-12">
+                <label asp-for="Profile.SystemUserLastName" class="form-label" id="LabelText">Change Last Name:</label>
+            </div>
+            <div class="col-12">
+                <input asp-for="Profile.SystemUserLastName" type="text" class="form-control" />
+                <span asp-validation-for="Profile.SystemUserLastName" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="row my-2">
+            <div class="col-12">
+                <label asp-for="Profile.SystemUserName" class="form-label" id="LabelText">Change Username:</label>
+            </div>
+            <div class="col-12">
+                <input asp-for="Profile.SystemUserName" type="text" class="form-control" />
+                <span asp-validation-for="Profile.SystemUserName" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="row my-2">
+            <div class="col-6">
+                <input asp-for="IsAdmin" type="checkbox" /> Is Admin?
+                <span asp-validation-for="IsAdmin" value="IsAdmin"></span>
+            </div>
+            <!--<div class="col-6">
+                <input asp-for="Profile.AccountTypeID" type="text" class="form-control" />
+                <span asp-validation-for="Profile.AccountTypeID" class="text-danger"></span>
+            </div>-->
+        </div>
+        <div class="row my-2">
+            <div class="col-12">
+                <button type="submit" class="form-control btn btn-primary">Confirm Edit</button>
+            </div>
+        </div>
+    </form>
+</div>

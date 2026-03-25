@@ -75,14 +75,15 @@ namespace FinancialLiteracyTool.Pages.Account
                         userID = Convert.ToInt32(idCmd.ExecuteScalar());
                     }
 
-                    string cmdSystemUserText = "INSERT INTO SystemUser (UserID, SystemUsername, SystemUserPassword, SystemUserEmail, IsAdmin, SystemUserProfileImage) VALUES (@UserID, @SystemUsername, @SystemUserPassword, @SystemUserEmail, @IsAdmin, @ProfileImage);";
+                    string cmdSystemUserText = "INSERT INTO SystemUser (UserID, SystemUsername, SystemUserPassword, SystemUserEmail, SystemUserProfileImage, IsAdmin, IsCoach) VALUES (@UserID, @SystemUsername, @SystemUserPassword, @SystemUserEmail, @ProfileImage, @IsAdmin, @IsCoach);";
                     SqlCommand cmdS = new SqlCommand(cmdSystemUserText, conn);
                     cmdS.Parameters.AddWithValue("@UserID", userID);
                     cmdS.Parameters.AddWithValue("@SystemUsername", NewUser.UserName);
                     cmdS.Parameters.AddWithValue("@SystemUserPassword", AppHelper.GeneratePasswordHash(NewUser.Password));
                     cmdS.Parameters.AddWithValue("@SystemUserEmail", NewUser.Email);
-                    cmdS.Parameters.AddWithValue("@IsAdmin", false);
                     cmdS.Parameters.AddWithValue("@ProfileImage", profileImageURL);
+                    cmdS.Parameters.AddWithValue("@IsAdmin", false);
+                    cmdS.Parameters.AddWithValue("@IsCoach", false);
                     cmdS.ExecuteNonQuery();
 
                 }

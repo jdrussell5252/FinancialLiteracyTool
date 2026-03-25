@@ -62,7 +62,7 @@ namespace FinancialLiteracyTool.Pages.Account
                             // create a role claim
                             //Claim roleClaim = new Claim(ClaimTypes.Role, reader.GetInt32(4).ToString());
 
-                            bool isAdmin = reader.GetBoolean(5);
+                            bool isAdmin = reader.GetBoolean(7);
                             Claim roleClaim = new Claim(ClaimTypes.Role, isAdmin ? "Admin" : "User");
 
                             // create a list of claims

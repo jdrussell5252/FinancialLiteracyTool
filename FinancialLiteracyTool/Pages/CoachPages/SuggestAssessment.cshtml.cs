@@ -2,21 +2,13 @@ using FinancialLiteracyTool.MyAppHelper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Data.SqlClient;
-using System.Data;
 using System.Security.Claims;
 
-namespace FinancialLiteracyTool.Pages
+namespace FinancialLiteracyTool.Pages.CoachPages
 {
-    public class IndexModel : PageModel
+    public class SuggestAssessmentModel : PageModel
     {
-        private readonly ILogger<IndexModel> _logger;
         public bool IsAdmin { get; set; }
-
-        public IndexModel(ILogger<IndexModel> logger)
-        {
-            _logger = logger;
-        }// End of 'IndexModel'.
-
         public IActionResult OnGet(int id)
         {
             // Safely access the NameIdentifier claim
@@ -79,5 +71,5 @@ namespace FinancialLiteracyTool.Pages
             }
         }//End of 'CheckIfUserIsAdmin'.
         /*--------------------ADMIN PRIV----------------------*/
-    }// End of 'Index' Class.
+    }// End of 'SuggestAssessment' Class.
 }// End of 'namespace'.

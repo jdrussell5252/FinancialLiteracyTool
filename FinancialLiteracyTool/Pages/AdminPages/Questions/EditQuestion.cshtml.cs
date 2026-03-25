@@ -43,32 +43,111 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Questions
 
         public IActionResult OnPost(int id)
         {
+            var QuestionText = (Questions.QuestionText ?? string.Empty).Trim();
+            const int dbMaxQuestionText = 255;
+
+            if (QuestionText.Length > dbMaxQuestionText)
+            {
+                ModelState.AddModelError("Questions.QuestionText", "Question Text must not exceed 255 words.");
+            }
+            for (int i = 0; i < Choices.Count; i++)
+            {
+                if (string.IsNullOrWhiteSpace(Choices[i]))
+                {
+                    ModelState.AddModelError($"Choices[{i}]", "Choice text cannot be empty.");
+                }
+            }
             if (ModelState.IsValid)
             {
                 using (SqlConnection conn = new SqlConnection(AppHelper.GetDBConnectionString()))
                 {
+                    /*conn.Open();
                     string cmdText = "UPDATE Question SET QuestionText = @QuestionText WHERE QuestionID = @QuestionID;";
                     SqlCommand cmd = new SqlCommand(cmdText, conn);
                     cmd.Parameters.AddWithValue("@QuestionText", Questions.QuestionText);
                     cmd.Parameters.AddWithValue("@QuestionID", id);
-                    conn.Open();
                     cmd.ExecuteNonQuery();
 
-                    /*string cmdText = "UPDATE Question SET AreaID = @AreaID WHERE QuestionID = @QuestionID;";
+                    string cmdText2 = "UPDATE Question SET AreaID = @AreaID WHERE QuestionID = @QuestionID;";
+                    SqlCommand cmd2 = new SqlCommand(cmdText2, conn);
+                    cmd2.Parameters.AddWithValue("@AreaID", SelectedQuestionAreaID);
+                    cmd2.Parameters.AddWithValue("@QuestionID", id);
+                    //conn.Open();
+                    cmd2.ExecuteNonQuery();
+
+                    string cmdText3 = "UPDATE Question SET QuestionTypeID = @QuestionTypeID WHERE QuestionID = @QuestionID;";
+                    SqlCommand cmd3 = new SqlCommand(cmdText3, conn);
+                    cmd3.Parameters.AddWithValue("@QuestionTypeID", SelectedQuestionTypeID);
+                    cmd3.Parameters.AddWithValue("@QuestionID", id);
+                    //conn.Open();
+                    cmd3.ExecuteNonQuery();
+
+                    string cmdText4 = "UPDATE QuestionChoiceText SET QuestionChoiceText = @QuestionChoiceText WHERE QuestionID = @QuestionID;";
+                    SqlCommand cmd4 = new SqlCommand(cmdText4, conn);
+                    cmd4.Parameters.AddWithValue("@QuestionChoiceText", Questions.QuestionText);
+                    cmd4.Parameters.AddWithValue("@QuestionID", id);
+                    //conn.Open();
+                    cmd4.ExecuteNonQuery();
+
+                    string cmdText5 = "UPDATE IsCorrect SET IsCorrect = @IsCorrect WHERE QuestionID = @QuestionID;";
+                    SqlCommand cmd5 = new SqlCommand(cmdText5, conn);
+                    cmd5.Parameters.AddWithValue("@IsCorrect", IsCo);
+                    cmd5.Parameters.AddWithValue("@QuestionID", id);
+                    //conn.Open();
+                    cmd5.ExecuteNonQuery();*/
+
+                    conn.Open();
+
+                    // Update main question
+                    string cmdText = @"
+                    UPDATE Question
+                    SET QuestionText = @QuestionText,
+                    AreaID = @AreaID,
+                    QuestionTypeID = @QuestionTypeID
+                    WHERE QuestionID = @QuestionID;";
+
                     SqlCommand cmd = new SqlCommand(cmdText, conn);
+                    cmd.Parameters.AddWithValue("@QuestionText", Questions.QuestionText);
                     cmd.Parameters.AddWithValue("@AreaID", SelectedQuestionAreaID);
-                    cmd.Parameters.AddWithValue("@QuestionID", id);
-                    conn.Open();
-                    cmd.ExecuteNonQuery();
-
-                    string cmdText = "UPDATE Question SET QuestionTypeID = @QuestionTypeID WHERE QuestionID = @QuestionID;";
-                    SqlCommand cmd = new SqlCommand(cmdText, conn);
                     cmd.Parameters.AddWithValue("@QuestionTypeID", SelectedQuestionTypeID);
                     cmd.Parameters.AddWithValue("@QuestionID", id);
-                    conn.Open();
                     cmd.ExecuteNonQuery();
-                    
-                    */
+
+                    // Load existing choice ids
+                    string selectChoicesSql = @"
+                    SELECT ChoiceID
+                    FROM QuestionChoices
+                    WHERE QuestionID = @QuestionID
+                    ORDER BY ChoiceID;";
+
+                    SqlCommand selectCmd = new SqlCommand(selectChoicesSql, conn);
+                    selectCmd.Parameters.AddWithValue("@QuestionID", id);
+
+                    var choiceIds = new List<int>();
+                    using (var reader = selectCmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            choiceIds.Add(reader.GetInt32(0));
+                        }
+                    }
+
+                    // Update each choice
+                    for (int i = 0; i < choiceIds.Count && i < Choices.Count; i++)
+                    {
+                        string updateChoiceSql = @"
+                        UPDATE QuestionChoices
+                        SET QuestionChoiceText = @QuestionChoiceText,
+                        IsCorrect = @IsCorrect
+                        WHERE ChoiceID = @ChoiceID;";
+
+                        SqlCommand updateChoiceCmd = new SqlCommand(updateChoiceSql, conn);
+                        updateChoiceCmd.Parameters.AddWithValue("@QuestionChoiceText", Choices[i] ?? "");
+                        updateChoiceCmd.Parameters.AddWithValue("@IsCorrect", CorrectChoiceIndex.HasValue && CorrectChoiceIndex.Value == i);
+                        updateChoiceCmd.Parameters.AddWithValue("@ChoiceID", choiceIds[i]);
+
+                        updateChoiceCmd.ExecuteNonQuery();
+                    }
                 }
                 return RedirectToPage("BrowseQuestions");
             }

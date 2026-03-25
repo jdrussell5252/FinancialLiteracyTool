@@ -12,6 +12,7 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Users
     public class EditUsersModel : PageModel
     {
         public bool IsAdmin { get; set; }
+        public bool IsCoach { get; set; }
         public ProfileView Profile { get; set; }
 
         public void OnGet(int id)
@@ -25,7 +26,7 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Users
                 CheckIfUserIsAdmin(userId);
             }
             /*--------------------ADMIN PRIV----------------------*/
-            PopulateUserName(id);
+            PopulateSystemUserInfo(id);
             PopulateFirstAndLast(id);
         }//End of 'OnGet'.
 
@@ -60,11 +61,11 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Users
             }
         }//End of 'OnPost'.
 
-        public void PopulateUserName(int id)
+        public void PopulateSystemUserInfo(int id)
         {
             using (SqlConnection conn = new SqlConnection(AppHelper.GetDBConnectionString()))
             {
-                string query = "SELECT UserID, SystemUsername, IsAdmin FROM SystemUser WHERE UserID = @UserID ";
+                string query = "SELECT UserID, SystemUsername, IsAdmin, IsCoach FROM SystemUser WHERE UserID = @UserID ";
                 SqlCommand cmd = new SqlCommand(query, conn);
                 cmd.Parameters.AddWithValue("@UserID", id);
                 conn.Open();
@@ -79,10 +80,11 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Users
                             SystemUserName = reader.GetString(1),
                         };
                         IsAdmin = reader.GetBoolean(2);
+                        IsCoach = reader.GetBoolean(3);
                     }
                 }
             }
-        }
+        }// End of 'PopulateSystemUserInfo'.
 
         public void PopulateFirstAndLast(int id)
         {
@@ -102,7 +104,7 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Users
                     }
                 }
             }
-        }
+        }// End of 'PopulateFirstAndLast'.
 
         /*--------------------ADMIN PRIV----------------------*/
         private void CheckIfUserIsAdmin(int userId)
@@ -116,7 +118,7 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Users
                 var result = cmd.ExecuteScalar();
 
                 // If SystemUserRole is 1, set IsUserAdmin to true
-                if (result != null && result.ToString() == "True")
+                if (result.ToString() == "True")
                 {
                     IsAdmin = true;
                     ViewData["IsAdmin"] = true;
@@ -128,5 +130,5 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Users
             }
         }//End of 'CheckIfUserIsAdmin'.
         /*--------------------ADMIN PRIV----------------------*/
-    }
-}
+    }// End of '' Class.
+}// End of 'namespace'.

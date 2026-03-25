@@ -97,7 +97,7 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Users
                             UserFName = reader.GetString(1),
                             UserLName = reader.GetString(2),
                             SystemUsername = reader.GetString(3),
-                            IsAdmin = reader.GetBoolean(4)
+                            IsAdmin = reader.GetInt32(4)
                         };
                         Users.Add(Auser);
 

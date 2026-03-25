@@ -4,9 +4,9 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Data.SqlClient;
 using System.Security.Claims;
 
-namespace FinancialLiteracyTool.Pages.CoachPages
+namespace FinancialLiteracyTool.Pages.AdminPages.Users
 {
-    public class SuggestAssessmentModel : PageModel
+    public class AssignCoachModel : PageModel
     {
         public bool IsAdmin { get; set; }
         public bool IsCoach { get; set; }
@@ -74,5 +74,5 @@ namespace FinancialLiteracyTool.Pages.CoachPages
             }
         }//End of 'CheckIfUserIsAdmin'.
         /*--------------------ADMIN PRIV----------------------*/
-    }// End of 'SuggestAssessment' Class.
+    }// End of '' Class.
 }// End of 'namespace'.

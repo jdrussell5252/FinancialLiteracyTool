@@ -24,28 +24,30 @@ namespace FinancialLiteracyTool.Pages.CoachPages
             return Page();
         }//End of 'OnGet'.
 
+        /*--------------------COACH PRIV----------------------*/
         private void CheckIfUserIsCoach(int userId)
         {
             using (SqlConnection conn = new SqlConnection(AppHelper.GetDBConnectionString()))
             {
-                string cmdText = "SELECT IsCoach FROM SystemUser WHERE SystemUserID = @SystemUserID";
+                string cmdText = "SELECT SystemUserRole FROM SystemUser WHERE SystemUserID = @SystemUserID";
                 SqlCommand cmd = new SqlCommand(cmdText, conn);
                 cmd.Parameters.AddWithValue("@SystemUserID", userId);
                 conn.Open();
                 var result = cmd.ExecuteScalar();
 
                 // If SystemUserRole is 2, set IsUserAdmin to true
-                if (result != null && result.ToString() == "True")
+                if (result != null && result.ToString() == "2")
                 {
-                    IsAdmin = true;
+                    IsCoach = true;
                     ViewData["IsCoach"] = true;
                 }
                 else
                 {
-                    IsAdmin = false;
+                    IsCoach = false;
                 }
             }
         }//End of 'CheckIfUserIsCoach'.
+        /*--------------------END OF COACH PRIV----------------------*/
 
         /*--------------------ADMIN PRIV----------------------*/
         private void CheckIfUserIsAdmin(int userId)

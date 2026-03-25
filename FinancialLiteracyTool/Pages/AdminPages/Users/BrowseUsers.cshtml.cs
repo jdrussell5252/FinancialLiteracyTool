@@ -1,5 +1,6 @@
 using FinancialLiteracyTool.Model.Users;
 using FinancialLiteracyTool.MyAppHelper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Data.SqlClient;
@@ -7,6 +8,7 @@ using System.Security.Claims;
 
 namespace FinancialLiteracyTool.Pages.AdminPages.Users
 {
+    [Authorize]
     public class BrowseUsersModel : PageModel
     {
         public bool IsAdmin { get; set; }

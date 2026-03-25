@@ -32,6 +32,7 @@ namespace FinancialLiteracyTool.Pages
             return Page();
         }//End of 'OnGet'.
 
+        /*--------------------COACH PRIV----------------------*/
         private void CheckIfUserIsCoach(int userId)
         {
             using (SqlConnection conn = new SqlConnection(AppHelper.GetDBConnectionString()))
@@ -54,6 +55,7 @@ namespace FinancialLiteracyTool.Pages
                 }
             }
         }//End of 'CheckIfUserIsCoach'.
+        /*--------------------END OF COACH PRIV----------------------*/
 
         /*--------------------ADMIN PRIV----------------------*/
         private void CheckIfUserIsAdmin(int userId)

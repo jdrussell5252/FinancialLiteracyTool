@@ -13,11 +13,14 @@
             Get your personalized financial score in minutes.
         </p>
 
-        <a asp-page="/Assessment/TakeAssessment" class="btn-main">Take Assessment</a>
+        <a asp-page="/AdminPages/AdminAssessment/BrowseAssessments" class="btn-main">Browse Assessments</a>
 
         <br><br>
 
-        <a asp-page="/Account/Profile" class="btn-secondary">View Profile</a>
+        @if (User.Identity.IsAuthenticated)
+        {
+            <a asp-page="/Account/Profile" class="btn-secondary">View Profile</a>
+        }
     </div>
 
     <div class="home-features">

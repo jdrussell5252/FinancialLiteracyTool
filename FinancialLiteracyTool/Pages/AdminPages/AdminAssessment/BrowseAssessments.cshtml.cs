@@ -2,13 +2,16 @@ using FinancialLiteracyTool.Model.Assessments;
 using FinancialLiteracyTool.Model.Questions;
 using FinancialLiteracyTool.Model.Users;
 using FinancialLiteracyTool.MyAppHelper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Data.SqlClient;
 using System.Security.Claims;
 
+
 namespace FinancialLiteracyTool.Pages.AdminPages.AdminAssessment
 {
+    [Authorize]
     public class BrowseAssessmentsModel : PageModel
     {
         public bool IsAdmin { get; set; }

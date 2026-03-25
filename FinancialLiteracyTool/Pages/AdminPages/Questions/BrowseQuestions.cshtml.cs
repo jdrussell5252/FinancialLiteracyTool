@@ -1,4 +1,4 @@
-using FinancialLiteracyTool.Model.Questions;
+﻿using FinancialLiteracyTool.Model.Questions;
 using FinancialLiteracyTool.MyAppHelper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -38,7 +38,7 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Questions
 
             TotalCount = Questions.Count;
 
-            // Clamp PageNumber so it�s not past the last page
+            // Clamp PageNumber so it’s not past the last page
             if (TotalCount > 0 && (PageNumber - 1) * PageSize >= TotalCount)
             {
                 PageNumber = (int)Math.Ceiling((double)TotalCount / PageSize);
@@ -124,14 +124,15 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Questions
 
             using (SqlConnection conn = new SqlConnection(AppHelper.GetDBConnectionString()))
             {
+
                 string query =
-                    "SELECT q.QuestionID, q.QuestionText, qa.AreaName, qt.TypeName, " +
-                    "qc.ChoiceID, qc.QuestionChoiceText " +
-                    "FROM Question AS q " +
-                    "INNER JOIN Area AS qa ON qa.AreaID = q.AreaID " +
-                    "INNER JOIN QuestionType AS qt ON qt.QuestionTypeID = q.QuestionTypeID " +
-                    "INNER JOIN QuestionChoices AS qc ON qc.QuestionID = q.QuestionID " +
-                    "ORDER BY q.QuestionID";
+                  "SELECT q.QuestionID, q.QuestionText, qa.AreaName, qt.TypeName, " +
+                  "qc.ChoiceID, qc.QuestionChoiceText, qc.IsCorrect " + 
+                  "FROM Question AS q " +
+                  "INNER JOIN Area AS qa ON qa.AreaID = q.AreaID " +
+                  "INNER JOIN QuestionType AS qt ON qt.QuestionTypeID = q.QuestionTypeID " +
+                  "INNER JOIN QuestionChoices AS qc ON qc.QuestionID = q.QuestionID " +
+                  "ORDER BY q.QuestionID";
 
                 SqlCommand cmd = new SqlCommand(query, conn);
                 conn.Open();
@@ -161,13 +162,13 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Questions
 
                         Questions.Add(currentQuestion);
                     }
-
                     // Add the choice for this row
                     currentQuestion.Choices.Add(new QuestionChoices
                     {
                         QuestionChoiceID = reader.GetInt32(4),
                         QuestionID = questionId,
-                        QuestionChoiceText = reader.GetString(5)
+                        QuestionChoiceText = reader.GetString(5),
+                        IsCorrect = reader.GetBoolean(6) // ✅ FIXED
                     });
                 }
             }

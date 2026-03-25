@@ -207,3 +207,76 @@ body {
     border-color: darkred;
     color: white;
 }
+
+/*-----------------------------------------Take Assessment Page----------------------------------------*/
+
+.exam-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 70vh;
+}
+
+#questionContainer {
+    width: 100%;
+    max-width: 600px;
+}
+
+.question {
+    display: none;
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    /* animation base */
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.4s ease;
+}
+
+    .question.active {
+        display: block;
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+/* Choices */
+.choice-option {
+    display: block;
+    padding: 12px 15px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+    /* Hover effect */
+    .choice-option:hover {
+        background-color: #f1f3f5;
+        transform: scale(1.02);
+    }
+
+    /* Selected */
+    .choice-option.selected {
+        background-color: #0d6efd;
+        color: white;
+        border-color: #0d6efd;
+    }
+
+    /* Hide radio button */
+    .choice-option input {
+        display: none;
+    }
+
+/* Navigation buttons */
+.nav-buttons {
+    text-align: center;
+    margin-top: 20px;
+}
+
+    .nav-buttons button,
+    .nav-buttons a {
+        margin: 5px;
+        min-width: 120px;
+    }

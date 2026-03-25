@@ -57,11 +57,16 @@
 
                             <!-- Choices -->
                             <p class="fw-bold">Choices:</p>
-
                             <ul class="mb-3">
                                 @foreach (var c in LocalQuestion.Choices)
                                 {
-                                    <li>@c.QuestionChoiceText</li>
+                                    <li>
+                                        @c.QuestionChoiceText
+                                        @if (c.IsCorrect)
+                                        {
+                                            <span class="badge bg-success ms-2">Correct</span>
+                                        }
+                                    </li>
                                 }
                             </ul>
 

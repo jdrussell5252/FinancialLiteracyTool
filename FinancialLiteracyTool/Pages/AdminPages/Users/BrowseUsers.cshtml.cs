@@ -17,8 +17,8 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Users
         public int PageSize { get; set; } = 5;
         public int TotalCount { get; set; }
         public int TotalPages => Math.Max(1, (int)Math.Ceiling((double)TotalCount / Math.Max(1, PageSize)));
-        
-        public IActionResult OnGet(int id, int pageNumber = 1, int pageSize = 5)
+
+        public IActionResult OnGet(int pageNumber = 1, int pageSize = 5)
         {
 
             // Safely access the NameIdentifier claim
@@ -69,7 +69,7 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Users
             using (SqlConnection conn = new SqlConnection(AppHelper.GetDBConnectionString()))
             {
                 conn.Open();
-                string deleteCmdText = "DELETE SystemUser FROM SystemUser WHERE SystemUserID = @UserID";
+                string deleteCmdText = "DELETE FROM SystemUser WHERE SystemUserID = @UserID";
                 SqlCommand deleteCmd = new SqlCommand(deleteCmdText, conn);
                 deleteCmd.Parameters.AddWithValue("@UserID", id);
                 deleteCmd.ExecuteNonQuery();
@@ -83,7 +83,7 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Users
         {
             using (SqlConnection conn = new SqlConnection(AppHelper.GetDBConnectionString()))
             {
-                string query = "SELECT SystemUserID, SystemUserFname, SystemUserLName, SystemUsername, IsAdmin FROM SystemUser";
+                string query = "SELECT SystemUserID, SystemUserFname, SystemUserLName, SystemUsername, SystemUserRole FROM SystemUser";
                 SqlCommand cmd = new SqlCommand(query, conn);
                 conn.Open();
                 SqlDataReader reader = cmd.ExecuteReader();
@@ -118,7 +118,7 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Users
                 var result = cmd.ExecuteScalar();
 
                 // If SystemUserRole is 2, set IsUserAdmin to true
-                if (Convert.ToInt32(result) == 3)
+                if (result != null && Convert.ToInt32(result) == 3)
                 {
                     IsAdmin = true;
                     ViewData["IsAdmin"] = true;

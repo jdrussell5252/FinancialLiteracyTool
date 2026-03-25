@@ -3,47 +3,143 @@
 @{
 }
 
-@foreach (var q in Model.Questions.Take(30))
-{
-    <div class="mb-4">
-        <div class="fw-bold">(@q.QuestionID) @q.QuestionText </div>
+<style>
+    body {
+        background-color: #f8f9fa;
+    }
 
-        @foreach (var c in Model.Choices.Where(x => x.QuestionID == q.QuestionID))
+    
+</style>
+
+<div class="exam-container">
+    <div id="questionContainer">
+        @foreach (var q in Model.Questions.Take(30))
         {
-            // Make ID unique so labels work correctly
-            var safeChoice = c.QuestionChoiceText.Replace(" ", "_").Replace("\"", "").Replace("'", "");
-            var inputId = $"q{q.QuestionID}_{safeChoice}";
+            <div class="question mb-4">
+                <div class="fw-bold mb-2">
+                    Question @(Model.Questions.Take(30).ToList().IndexOf(q) + 1)
+                    of @Model.Questions.Take(30).Count()
+                </div>
 
-            <div>
-                <input type="radio"
-                       id="@inputId"
-                       name="q_@q.QuestionID"
-                       value="@c.QuestionChoiceText" />
-                <label for="@inputId">@c.QuestionChoiceText</label>
+                <div class="mb-3">@q.QuestionText</div>
+
+                @foreach (var c in Model.Choices.Where(x => x.QuestionID == q.QuestionID))
+                {
+                    var safeChoice = c.QuestionChoiceText.Replace(" ", "_").Replace("\"", "").Replace("'", "");
+                    var inputId = $"q{q.QuestionID}_{safeChoice}";
+
+                    <label class="choice-option">
+                        <input type="radio"
+                               id="@inputId"
+                               name="q_@q.QuestionID"
+                               value="@c.QuestionChoiceText" />
+                        @c.QuestionChoiceText
+                    </label>
+                }
             </div>
         }
     </div>
-}
+</div>
 
-<a asp-page="/Assessment/ConfirmSubmission"
-   class="btn btn-primary"
-   role="button"
-   id="finishBtn">
-    Finish Assessment
-</a>
+<!-- Navigation -->
+<div class="nav-buttons">
+    <button class="btn btn-secondary" id="prevBtn">Previous</button>
+    <button class="btn btn-primary" id="nextBtn">Next</button>
+
+    <a asp-page="/Assessment/ConfirmSubmission"
+           class="btn btn-success"
+           id="finishBtn"
+           style="display:none;">
+        Finish Assessment
+    </a>
+</div>
 
 <script>
-    // Save answers into sessionStorage as the user selects them
+    let currentQuestion = 0;
+    const questions = document.querySelectorAll(".question");
+    const total = questions.length;
+
+    // =============================
+    // SHOW QUESTION
+    // =============================
+    function showQuestion(index) {
+        questions.forEach((q, i) => {
+            q.classList.remove("active");
+            if (i === index) q.classList.add("active");
+        });
+
+        document.getElementById("prevBtn").style.display = index === 0 ? "none" : "inline-block";
+        document.getElementById("nextBtn").style.display = index === total - 1 ? "none" : "inline-block";
+        document.getElementById("finishBtn").style.display = index === total - 1 ? "inline-block" : "none";
+    }
+
+    // =============================
+    // SAVE ANSWERS
+    // =============================
     document.querySelectorAll('input[type="radio"]').forEach(r => {
         r.addEventListener('change', () => {
-            const qId = r.name.replace("q_", ""); // name="q_12" -> "12"
+            const qId = r.name.replace("q_", "");
             const answers = JSON.parse(sessionStorage.getItem("answers") || "{}");
+
             answers[qId] = r.value;
             sessionStorage.setItem("answers", JSON.stringify(answers));
+
+            // Highlight selected
+            const parent = r.closest(".question");
+            parent.querySelectorAll(".choice-option").forEach(opt => {
+                opt.classList.remove("selected");
+            });
+
+            r.parentElement.classList.add("selected");
         });
     });
 
-    // Before going to ConfirmSubmission, POST answers to server so it can set TempData["AnswersJson"]
+    // =============================
+    // RESTORE ANSWERS
+    // =============================
+    function restoreAnswers() {
+        const answers = JSON.parse(sessionStorage.getItem("answers") || "{}");
+
+        Object.keys(answers).forEach(qId => {
+            const value = answers[qId];
+
+            const radios = document.querySelectorAll(`input[name="q_${qId}"]`);
+            radios.forEach(r => {
+                if (r.value === value) {
+                    r.checked = true;
+                    r.parentElement.classList.add("selected");
+                }
+            });
+        });
+    }
+
+    // =============================
+    // NEXT BUTTON (validation added)
+    // =============================
+    document.getElementById("nextBtn").addEventListener("click", () => {
+        const radios = questions[currentQuestion].querySelectorAll('input[type="radio"]');
+        const answered = Array.from(radios).some(r => r.checked);
+
+        if (!answered) {
+            alert("Please select an answer before continuing.");
+            return;
+        }
+
+        currentQuestion++;
+        showQuestion(currentQuestion);
+    });
+
+    // =============================
+    // PREVIOUS BUTTON
+    // =============================
+    document.getElementById("prevBtn").addEventListener("click", () => {
+        currentQuestion--;
+        showQuestion(currentQuestion);
+    });
+
+    // =============================
+    // SUBMIT TO BACKEND
+    // =============================
     document.getElementById("finishBtn").addEventListener("click", async (e) => {
         e.preventDefault();
 
@@ -64,39 +160,14 @@
             alert("Could not save answers. Please try again.");
         }
     });
-</script>
-<script>
-    function restoreAnswers() {
-        const answers = JSON.parse(sessionStorage.getItem("answers") || "{}");
 
-        // answers is like { "12": "Choice text", "13": "Choice text" }
-        Object.keys(answers).forEach(qId => {
-            const value = answers[qId];
-
-            // radio group name is name="q_12"
-            const radios = document.querySelectorAll(`input[type="radio"][name="q_${qId}"]`);
-            radios.forEach(r => {
-                if (r.value === value) r.checked = true;
-            });
-        });
-    }
-
-    // Save answers on change (same idea you already have)
-    document.querySelectorAll('input[type="radio"]').forEach(r => {
-        r.addEventListener('change', () => {
-            const qId = r.name.replace("q_", "");
-            const answers = JSON.parse(sessionStorage.getItem("answers") || "{}");
-            answers[qId] = r.value;
-            sessionStorage.setItem("answers", JSON.stringify(answers));
-        });
-    });
-
-    // Restore as soon as page loads
+    // =============================
+    // INIT
+    // =============================
     restoreAnswers();
+    showQuestion(0);
 </script>
 
-
-@* Needed for antiforgery token *@
 <form method="post" style="display:none;">
     @Html.AntiForgeryToken()
 </form>

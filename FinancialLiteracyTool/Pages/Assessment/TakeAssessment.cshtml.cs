@@ -1,11 +1,9 @@
 using FinancialLiteracyTool.Model.Assessments;
 using FinancialLiteracyTool.Model.Questions;
-using FinancialLiteracyTool.Model.Users;
 using FinancialLiteracyTool.MyAppHelper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Data.SqlClient;
-using System.Reflection.PortableExecutable;
 using System.Security.Claims;
 using System.Text.Json;
 
@@ -88,7 +86,7 @@ namespace FinancialLiteracyTool.Pages.Assessment
         {
             using (SqlConnection conn = new SqlConnection(AppHelper.GetDBConnectionString()))
             {
-                string cmdText = "SELECT IsAdmin FROM SystemUser WHERE SystemUserID = @SystemUserID";
+                string cmdText = "SELECT SystemUserRole FROM SystemUser WHERE SystemUserID = @SystemUserID";
                 SqlCommand cmd = new SqlCommand(cmdText, conn);
                 cmd.Parameters.AddWithValue("@SystemUserID", userId);
                 conn.Open();

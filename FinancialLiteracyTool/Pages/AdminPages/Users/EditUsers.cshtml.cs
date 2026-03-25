@@ -14,7 +14,7 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Users
     public class EditUsersModel : PageModel
     {
         public bool IsAdmin { get; set; }
-        public bool IsCoach { get; set; }
+        //public bool IsCoach { get; set; }
         public ProfileView Profile { get; set; }
 
         public void OnGet(int id)
@@ -37,13 +37,12 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Users
             {
                 using (SqlConnection conn = new SqlConnection(AppHelper.GetDBConnectionString()))
                 {
-                    string cmdText = "UPDATE SystemUser SET SystemUserFName = @SystemUserFName, SystemUserLName = @SystemUserLName, SystemUsername = @SystemUsername, IsAdmin = @IsAdmin, IsCoach = @IsCoach WHERE SystemUserID = @SystemUserID;";
+                    string cmdText = "UPDATE SystemUser SET SystemUserFName = @SystemUserFName, SystemUserLName = @SystemUserLName, SystemUsername = @SystemUsername, SystemUserRole = @SystemUserRole WHERE SystemUserID = @SystemUserID;";
                     SqlCommand cmd = new SqlCommand(cmdText, conn);
                     cmd.Parameters.AddWithValue("@SystemUserFName", Profile.SystemUserFirstName);
                     cmd.Parameters.AddWithValue("@SystemUserLName", Profile.SystemUserLastName);
                     cmd.Parameters.AddWithValue("@SystemUsername", Profile.SystemUserName);
-                    cmd.Parameters.AddWithValue("@IsAdmin", IsAdmin);
-                    cmd.Parameters.AddWithValue("@IsCoach", IsCoach);
+                    cmd.Parameters.AddWithValue("@SystemUserRole", IsAdmin);
                     cmd.Parameters.AddWithValue("@SystemUserID", id);
                     conn.Open();
                     cmd.ExecuteNonQuery();
@@ -61,7 +60,7 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Users
         {
             using (SqlConnection conn = new SqlConnection(AppHelper.GetDBConnectionString()))
             {
-                string query = "SELECT SystemUserFName, SystemUserLName, SystemUsername, IsAdmin, IsCoach FROM SystemUser WHERE SystemUserID = @SystemUserID";
+                string query = "SELECT SystemUserFName, SystemUserLName, SystemUsername, SystemUserRole FROM SystemUser WHERE SystemUserID = @SystemUserID";
                 SqlCommand cmd = new SqlCommand(query, conn);
                 cmd.Parameters.AddWithValue("@SystemUserID", id);
                 conn.Open();
@@ -76,8 +75,7 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Users
                             SystemUserLastName = reader.GetString(1),
                             SystemUserName = reader.GetString(2),
                         };
-                        IsAdmin = reader.GetBoolean(3);
-                        IsCoach = reader.GetBoolean(4);
+                        //IsAdmin = reader.GetInt32(3);
                     }
                 }
             }

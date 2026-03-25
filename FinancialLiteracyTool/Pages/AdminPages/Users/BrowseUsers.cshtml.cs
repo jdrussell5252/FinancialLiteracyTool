@@ -83,7 +83,7 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Users
         {
             using (SqlConnection conn = new SqlConnection(AppHelper.GetDBConnectionString()))
             {
-                string query = "SELECT SystemUserID, SystemUserFname, SystemUserLName, SystemUsername, IsAdmin FROM SystemUser";
+                string query = "SELECT SystemUserID, SystemUserFname, SystemUserLName, SystemUsername, SystemUserRole FROM SystemUser";
                 SqlCommand cmd = new SqlCommand(query, conn);
                 conn.Open();
                 SqlDataReader reader = cmd.ExecuteReader();
@@ -97,7 +97,7 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Users
                             UserFName = reader.GetString(1),
                             UserLName = reader.GetString(2),
                             SystemUsername = reader.GetString(3),
-                            IsAdmin = reader.GetBoolean(4)
+                            IsAdmin = reader.GetInt32(4)
                         };
                         Users.Add(Auser);
 

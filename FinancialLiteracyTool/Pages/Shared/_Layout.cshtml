@@ -42,10 +42,14 @@
 
             @if (User.Identity.IsAuthenticated)
             {
-
-                <a class="d-block py-2 text-white" asp-area="" asp-page="/Assessment/UserConfirmAssessment">Take Assessment</a>
-
+                var isCoach = ViewData["IsCoach"] != null && (bool)ViewData["IsCoach"];
                 var isAdmin = ViewData["IsAdmin"] != null && (bool)ViewData["IsAdmin"];
+
+                @if (!isCoach && !isAdmin)
+                {
+                    <a class="d-block py-2 text-white" asp-area="" asp-page="/Assessment/UserConfirmAssessment">Take Assessment</a>
+                }
+                
                 @if (isAdmin)
                 {
 
@@ -54,7 +58,6 @@
                     <a class="d-block py-2 text-white" asp-area="" asp-page="/AdminPages/AdminAssessment/BrowseAssessments">Browse Assessments</a>
                 }
 
-                var isCoach = ViewData["IsCoach"] != null && (bool)ViewData["IsCoach"];
                 @if (isCoach)
                 {
                     <a class="d-block py-2 text-white" asp-area="" asp-page="/CoachPages/SuggestAssessment">Suggest Assessments</a>

@@ -1,5 +1,6 @@
 using FinancialLiteracyTool.Model.Users;
 using FinancialLiteracyTool.MyAppHelper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -9,6 +10,7 @@ using System.Security.Claims;
 namespace FinancialLiteracyTool.Pages.AdminPages.Users
 {
     [BindProperties]
+    [Authorize]
     public class EditUsersModel : PageModel
     {
         public bool IsAdmin { get; set; }
@@ -27,7 +29,6 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Users
             }
             /*--------------------ADMIN PRIV----------------------*/
             PopulateSystemUserInfo(id);
-            PopulateFirstAndLast(id);
         }//End of 'OnGet'.
 
         public IActionResult OnPost(int id)
@@ -36,21 +37,16 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Users
             {
                 using (SqlConnection conn = new SqlConnection(AppHelper.GetDBConnectionString()))
                 {
-                    string cmdText = "UPDATE SystemUser SET SystemUsername = @SystemUsername, IsAdmin = @IsAdmin WHERE UserID = @UserID;";
+                    string cmdText = "UPDATE SystemUser SET SystemUserFName = @SystemUserFName, SystemUserLName = @SystemUserLName, SystemUsername = @SystemUsername, IsAdmin = @IsAdmin, IsCoach = @IsCoach WHERE SystemUserID = @SystemUserID;";
                     SqlCommand cmd = new SqlCommand(cmdText, conn);
-                    cmd.Parameters.AddWithValue("@UserID", id);
+                    cmd.Parameters.AddWithValue("@SystemUserFName", Profile.SystemUserFirstName);
+                    cmd.Parameters.AddWithValue("@SystemUserLName", Profile.SystemUserLastName);
                     cmd.Parameters.AddWithValue("@SystemUsername", Profile.SystemUserName);
                     cmd.Parameters.AddWithValue("@IsAdmin", IsAdmin);
-
-                    string cmdText2 = "UPDATE MyUsers SET UserFName = @UserFName, UserLName = @UserLName WHERE UserID = @UserID;";
-                    SqlCommand cmd2 = new SqlCommand(cmdText2, conn);
-                    cmd2.Parameters.AddWithValue("@UserID", id);
-                    cmd2.Parameters.AddWithValue("@UserFName", Profile.SystemUserFirstName);
-                    cmd2.Parameters.AddWithValue("@UserLName", Profile.SystemUserLastName);
-
+                    cmd.Parameters.AddWithValue("@IsCoach", IsCoach);
+                    cmd.Parameters.AddWithValue("@SystemUserID", id);
                     conn.Open();
                     cmd.ExecuteNonQuery();
-                    cmd2.ExecuteNonQuery();
                 }
                 return RedirectToPage("/AdminPages/Users/BrowseUsers");
             }
@@ -65,9 +61,9 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Users
         {
             using (SqlConnection conn = new SqlConnection(AppHelper.GetDBConnectionString()))
             {
-                string query = "SELECT UserID, SystemUsername, IsAdmin, IsCoach FROM SystemUser WHERE UserID = @UserID ";
+                string query = "SELECT SystemUserFName, SystemUserLName, SystemUsername, IsAdmin, IsCoach FROM SystemUser WHERE SystemUserID = @SystemUserID";
                 SqlCommand cmd = new SqlCommand(query, conn);
-                cmd.Parameters.AddWithValue("@UserID", id);
+                cmd.Parameters.AddWithValue("@SystemUserID", id);
                 conn.Open();
                 SqlDataReader reader = cmd.ExecuteReader();
                 if (reader.HasRows)
@@ -76,49 +72,30 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Users
                     {
                         Profile = new ProfileView
                         {
-                            SystemUserID = reader.GetInt32(0),
-                            SystemUserName = reader.GetString(1),
+                            SystemUserFirstName = reader.GetString(0),
+                            SystemUserLastName = reader.GetString(1),
+                            SystemUserName = reader.GetString(2),
                         };
-                        IsAdmin = reader.GetBoolean(2);
-                        IsCoach = reader.GetBoolean(3);
+                        IsAdmin = reader.GetBoolean(3);
+                        IsCoach = reader.GetBoolean(4);
                     }
                 }
             }
         }// End of 'PopulateSystemUserInfo'.
-
-        public void PopulateFirstAndLast(int id)
-        {
-            using (SqlConnection conn = new SqlConnection(AppHelper.GetDBConnectionString()))
-            {
-                string query = "SELECT UserFName, UserLName FROM MyUsers WHERE UserID = @UserID";
-                SqlCommand cmd = new SqlCommand(query, conn);
-                cmd.Parameters.AddWithValue("@UserID", id);
-                conn.Open();
-                SqlDataReader reader = cmd.ExecuteReader();
-                if (reader.HasRows)
-                {
-                    while (reader.Read())
-                    {
-                        Profile.SystemUserFirstName = reader.GetString(0);
-                        Profile.SystemUserLastName = reader.GetString(1);
-                    }
-                }
-            }
-        }// End of 'PopulateFirstAndLast'.
 
         /*--------------------ADMIN PRIV----------------------*/
         private void CheckIfUserIsAdmin(int userId)
         {
             using (SqlConnection conn = new SqlConnection(AppHelper.GetDBConnectionString()))
             {
-                string cmdText = "SELECT IsAdmin FROM SystemUser WHERE SystemUserID = @SystemUserID";
+                string cmdText = "SELECT SystemUserRole FROM SystemUser WHERE SystemUserID = @SystemUserID";
                 SqlCommand cmd = new SqlCommand(cmdText, conn);
                 cmd.Parameters.AddWithValue("@SystemUserID", userId);
                 conn.Open();
                 var result = cmd.ExecuteScalar();
 
-                // If SystemUserRole is 1, set IsUserAdmin to true
-                if (result.ToString() == "True")
+                // If SystemUserRole is 2, set IsUserAdmin to true
+                if (Convert.ToInt32(result) == 3)
                 {
                     IsAdmin = true;
                     ViewData["IsAdmin"] = true;

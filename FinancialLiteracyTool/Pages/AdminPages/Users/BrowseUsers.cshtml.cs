@@ -67,7 +67,7 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Users
             using (SqlConnection conn = new SqlConnection(AppHelper.GetDBConnectionString()))
             {
                 conn.Open();
-                string deleteCmdText = "DELETE SystemUser FROM SystemUser JOIN MyUsers on SystemUser.UserID = MyUsers.UserID where MyUsers.UserID = @UserID";
+                string deleteCmdText = "DELETE SystemUser FROM SystemUser WHERE SystemUserID = @UserID";
                 SqlCommand deleteCmd = new SqlCommand(deleteCmdText, conn);
                 deleteCmd.Parameters.AddWithValue("@UserID", id);
                 deleteCmd.ExecuteNonQuery();
@@ -81,7 +81,7 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Users
         {
             using (SqlConnection conn = new SqlConnection(AppHelper.GetDBConnectionString()))
             {
-                string query = "SELECT u.UserID, u.UserFname, u.UserLName, su.SystemUsername, su.IsAdmin FROM MyUsers AS u INNER JOIN SystemUser AS su ON su.UserID = u.UserID";
+                string query = "SELECT SystemUserID, SystemUserFname, SystemUserLName, SystemUsername, IsAdmin FROM SystemUser";
                 SqlCommand cmd = new SqlCommand(query, conn);
                 conn.Open();
                 SqlDataReader reader = cmd.ExecuteReader();
@@ -109,14 +109,14 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Users
         {
             using (SqlConnection conn = new SqlConnection(AppHelper.GetDBConnectionString()))
             {
-                string cmdText = "SELECT IsAdmin FROM SystemUser WHERE SystemUserID = @SystemUserID";
+                string cmdText = "SELECT SystemUserRole FROM SystemUser WHERE SystemUserID = @SystemUserID";
                 SqlCommand cmd = new SqlCommand(cmdText, conn);
                 cmd.Parameters.AddWithValue("@SystemUserID", userId);
                 conn.Open();
                 var result = cmd.ExecuteScalar();
 
-                // If SystemUserRole is 1, set IsUserAdmin to true
-                if (result != null && result.ToString() == "True")
+                // If SystemUserRole is 2, set IsUserAdmin to true
+                if (Convert.ToInt32(result) == 3)
                 {
                     IsAdmin = true;
                     ViewData["IsAdmin"] = true;

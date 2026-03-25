@@ -62,28 +62,16 @@ namespace FinancialLiteracyTool.Pages.Account
                 using (SqlConnection conn = new SqlConnection(AppHelper.GetDBConnectionString()))
                 {
                     conn.Open();
-                    string cmdEmployeeText = "INSERT INTO MyUsers (UserFName, UserLName) VALUES (@UserFName, @UserLName);";
-                    SqlCommand cmdE = new SqlCommand(cmdEmployeeText, conn);
-                    cmdE.Parameters.AddWithValue("@UserFName", NewUser.FirstName);
-                    cmdE.Parameters.AddWithValue("@UserLName", NewUser.LastName);
-                    cmdE.ExecuteNonQuery();
 
-                    // Get the new AutoNumber (must be SAME connection)
-                    int userID;
-                    using (var idCmd = new SqlCommand("SELECT @@IDENTITY;", conn))
-                    {
-                        userID = Convert.ToInt32(idCmd.ExecuteScalar());
-                    }
-
-                    string cmdSystemUserText = "INSERT INTO SystemUser (UserID, SystemUsername, SystemUserPassword, SystemUserEmail, SystemUserProfileImage, IsAdmin, IsCoach) VALUES (@UserID, @SystemUsername, @SystemUserPassword, @SystemUserEmail, @ProfileImage, @IsAdmin, @IsCoach);";
+                    string cmdSystemUserText = "INSERT INTO SystemUser (SystemUserFName, SystemUserLName, SystemUsername, SystemUserPassword, SystemUserEmail, SystemUserProfileImage, SystemUserRole) VALUES (@SystemUserFName, @SystemUserLName, @SystemUsername, @SystemUserPassword, @SystemUserEmail, @ProfileImage, @SystemUserRole);";
                     SqlCommand cmdS = new SqlCommand(cmdSystemUserText, conn);
-                    cmdS.Parameters.AddWithValue("@UserID", userID);
+                    cmdS.Parameters.AddWithValue("@SystemUserFName", NewUser.FirstName);
+                    cmdS.Parameters.AddWithValue("@SystemUserLName", NewUser.LastName);
                     cmdS.Parameters.AddWithValue("@SystemUsername", NewUser.UserName);
                     cmdS.Parameters.AddWithValue("@SystemUserPassword", AppHelper.GeneratePasswordHash(NewUser.Password));
                     cmdS.Parameters.AddWithValue("@SystemUserEmail", NewUser.Email);
                     cmdS.Parameters.AddWithValue("@ProfileImage", profileImageURL);
-                    cmdS.Parameters.AddWithValue("@IsAdmin", false);
-                    cmdS.Parameters.AddWithValue("@IsCoach", false);
+                    cmdS.Parameters.AddWithValue("@SystemUserRole", 1);
                     cmdS.ExecuteNonQuery();
 
                 }
@@ -94,5 +82,5 @@ namespace FinancialLiteracyTool.Pages.Account
                 return Page();
             }
         }//End of 'OnPost'.
-    }//End of 'Register'.
+    }//End of 'Register' Class. 
 }//End of 'namespace'.

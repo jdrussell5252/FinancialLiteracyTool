@@ -9,6 +9,7 @@ namespace FinancialLiteracyTool.Pages.CoachPages
     public class SuggestAssessmentModel : PageModel
     {
         public bool IsAdmin { get; set; }
+        public bool IsCoach { get; set; }
         public IActionResult OnGet(int id)
         {
             // Safely access the NameIdentifier claim

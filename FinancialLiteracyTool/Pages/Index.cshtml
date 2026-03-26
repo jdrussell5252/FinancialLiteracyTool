@@ -13,13 +13,33 @@
             Get your personalized financial score in minutes.
         </p>
 
-        <a asp-page="/AdminPages/AdminAssessment/BrowseAssessments" class="btn-main">Browse Assessments</a>
-
         <br><br>
 
         @if (User.Identity.IsAuthenticated)
         {
+            var isCoach = ViewData["IsCoach"] != null && (bool)ViewData["IsCoach"];
+            var isAdmin = ViewData["IsAdmin"] != null && (bool)ViewData["IsAdmin"];
+
+            @if (!isCoach && !isAdmin) 
+            {
+                <a asp-page="/UserPages/BrowseUserAssessments" class="btn-main">Browse Assessments</a>
+            }
+
+            @if (isAdmin)
+            {
+                <a asp-page="/AdminPages/AdminAssessment/BrowseAssessments" class="btn-main">Browse Assessments</a>
+            }
+
+            @if (isCoach) 
+            {
+                <a asp-page="/CoachPages/BrowseCoachedUsers" class="btn-main">Browse Your Users</a>
+            }
+
             <a asp-page="/Account/Profile" class="btn-secondary">View Profile</a>
+        }
+        @if (!User.Identity.IsAuthenticated) 
+        {
+            <a asp-page="/Account/Register" class="btn-main">Register</a>
         }
     </div>
 

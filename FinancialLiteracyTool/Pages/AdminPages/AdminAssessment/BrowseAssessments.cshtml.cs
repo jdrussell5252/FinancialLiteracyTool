@@ -138,7 +138,7 @@ namespace FinancialLiteracyTool.Pages.AdminPages.AdminAssessment
             using (SqlConnection conn = new SqlConnection(AppHelper.GetDBConnectionString()))
             {
                 // include description for display on browse page
-                string query = "SELECT AssessmentID, AssessmentName, ISNULL(AssessmentDescription, '') AS AssessmentDescription FROM Assessment";
+                string query = "SELECT AssessmentID, AssessmentName, AssessmentDescription FROM Assessment";
                 SqlCommand cmd = new SqlCommand(query, conn);
                 conn.Open();
                 SqlDataReader reader = cmd.ExecuteReader();
@@ -149,8 +149,8 @@ namespace FinancialLiteracyTool.Pages.AdminPages.AdminAssessment
                         BrowseAssessment aAssessment = new BrowseAssessment
                         {
                             AssessmentID = reader.GetInt32(0),
-                            AssessmentName = reader.IsDBNull(1) ? string.Empty : reader.GetString(1),
-                            AssessmentDescription = reader.IsDBNull(2) ? string.Empty : reader.GetString(2)
+                            AssessmentName = reader.GetString(1),
+                            AssessmentDescription = reader.GetString(2)
                         };
                         Assessments.Add(aAssessment);
 

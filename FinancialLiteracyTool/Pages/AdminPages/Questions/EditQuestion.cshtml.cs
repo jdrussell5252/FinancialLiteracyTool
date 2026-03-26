@@ -299,7 +299,7 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Questions
             {
                 Choices.Add(string.Empty);
             }
-        }
+        }// End of 'PopulateQuestionChoices'.
 
         /*--------------------ADMIN PRIV----------------------*/
         private void CheckIfUserIsAdmin(int userId)

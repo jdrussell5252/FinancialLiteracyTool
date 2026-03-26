@@ -185,19 +185,19 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Questions
             cmd.Parameters.AddWithValue("@Id", typeId);
             return (cmd.ExecuteScalar()?.ToString() ?? "").Trim();
         }
-
+        // End of 'GetQuestionTypeName'.
         private void InsertChoice(SqlConnection conn, int questionId, string text, bool isCorrect)
         {
             string sql = @"
-        INSERT INTO QuestionChoices (QuestionID, QuestionChoiceText, IsCorrect)
-        VALUES (@QuestionID, @Text, @IsCorrect);";
+            INSERT INTO QuestionChoices (QuestionID, QuestionChoiceText, IsCorrect)
+            VALUES (@QuestionID, @Text, @IsCorrect);";
 
             using var cmd = new SqlCommand(sql, conn);
             cmd.Parameters.AddWithValue("@QuestionID", questionId);
             cmd.Parameters.AddWithValue("@Text", text);
             cmd.Parameters.AddWithValue("@IsCorrect", isCorrect);
             cmd.ExecuteNonQuery();
-        }
+        }// End of 'InsertChoice'.
 
         /*--------------------ADMIN PRIV----------------------*/
         private void CheckIfUserIsAdmin(int userId)

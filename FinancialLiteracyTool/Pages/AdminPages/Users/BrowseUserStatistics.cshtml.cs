@@ -5,16 +5,14 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Data.SqlClient;
 using System.Security.Claims;
 
-namespace FinancialLiteracyTool.Pages.Account
+namespace FinancialLiteracyTool.Pages.AdminPages.Users
 {
     [Authorize]
-    public class EditPasswordModel : PageModel
+    public class BrowseUserStatisticsModel : PageModel
     {
         public bool IsAdmin { get; set; }
-
         public void OnGet()
         {
-
             // Safely access the NameIdentifier claim
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
             /*--------------------ADMIN PRIV----------------------*/
@@ -24,21 +22,21 @@ namespace FinancialLiteracyTool.Pages.Account
                 CheckIfUserIsAdmin(userId);
             }
             /*--------------------ADMIN PRIV----------------------*/
-        }//End of 'OnGet'.
+        }// End of 'OnGet'.
 
         /*--------------------ADMIN PRIV----------------------*/
         private void CheckIfUserIsAdmin(int userId)
         {
             using (SqlConnection conn = new SqlConnection(AppHelper.GetDBConnectionString()))
             {
-                string cmdText = "SELECT IsAdmin FROM SystemUser WHERE SystemUserID = @SystemUserID";
+                string cmdText = "SELECT SystemUserRole FROM SystemUser WHERE SystemUserID = @SystemUserID";
                 SqlCommand cmd = new SqlCommand(cmdText, conn);
                 cmd.Parameters.AddWithValue("@SystemUserID", userId);
                 conn.Open();
                 var result = cmd.ExecuteScalar();
 
                 // If SystemUserRole is 2, set IsUserAdmin to true
-                if (result != null && result.ToString() == "1")
+                if (Convert.ToInt32(result) == 3)
                 {
                     IsAdmin = true;
                     ViewData["IsAdmin"] = true;
@@ -50,5 +48,5 @@ namespace FinancialLiteracyTool.Pages.Account
             }
         }//End of 'CheckIfUserIsAdmin'.
         /*--------------------ADMIN PRIV----------------------*/
-    }// End of 'EditPassword'.
+    }// End of 'BrowseUserStatistics' Class.
 }// End of 'namespace'.

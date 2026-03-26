@@ -7,23 +7,22 @@ using System.Security.Claims;
 using FinancialLiteracyTool.MyAppHelper;
 using FinancialLiteracyTool.Model.Assessments;
 using Microsoft.Data.SqlClient;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FinancialLiteracyTool.Pages.AdminPages.AdminAssessment
 {
-    
+    [Authorize]
+    [BindProperties]
     public class EditAssessmentModel : PageModel
     {
         private const int MaxAssessmentNameLength = 10;
         public bool IsAdmin { get; set; }
 
-        [BindProperty]
         public MyAssessment EditAssessment { get; set; } = new();
         public List<SelectListItem> AssessmentArea { get; set; } = new();
 
-        [BindProperty]
         public int? SelectedAssessmentAreaID { get; set; }
 
-        [BindProperty]
         public List<int> SelectedQuestionIDs { get; set; } = new();
         public List<SelectListItem> QuestionOptions { get; set; } = new();
 
@@ -53,7 +52,7 @@ namespace FinancialLiteracyTool.Pages.AdminPages.AdminAssessment
             {
                 PopulateQuestionAreaList(SelectedAssessmentAreaID.Value);
             }
-        }
+        }// End of 'OnGet'.
 
         public IActionResult OnPost()
         {
@@ -148,7 +147,7 @@ namespace FinancialLiteracyTool.Pages.AdminPages.AdminAssessment
             }
 
             return RedirectToPage("BrowseAssessments");
-        }
+        }// End of 'OnPost'.
         
         // This handler is triggered by the onchange event of the AssessmentArea dropdown.
         public IActionResult OnPostLoadQuestions()
@@ -162,7 +161,7 @@ namespace FinancialLiteracyTool.Pages.AdminPages.AdminAssessment
                 PopulateQuestionAreaList(SelectedAssessmentAreaID.Value);
             }
             return Page();
-        }
+        }// End of ''.
         
 
         private void LoadAssessment(int id)
@@ -208,7 +207,7 @@ namespace FinancialLiteracyTool.Pages.AdminPages.AdminAssessment
                     }
                 }
             }
-        }
+        }// End of ''.
 
         private void PopulateQuestionAreaList(int id)
         {
@@ -231,7 +230,7 @@ namespace FinancialLiteracyTool.Pages.AdminPages.AdminAssessment
                     }
                 
             }
-        }
+        }// End of ''.
 
         private void PopulateAssessmentAreaList()
         {
@@ -254,7 +253,7 @@ namespace FinancialLiteracyTool.Pages.AdminPages.AdminAssessment
                     }
                 }
             }
-        }
+        }// End of ''.
 
         /*--------------------ADMIN PRIV----------------------*/
         private void CheckIfUserIsAdmin(int userId)
@@ -280,5 +279,5 @@ namespace FinancialLiteracyTool.Pages.AdminPages.AdminAssessment
             }
         }//End of 'CheckIfUserIsAdmin'.
         /*--------------------ADMIN PRIV----------------------*/
-    }
-}
+    }// End of 'EditAssessment' Class.
+}// End of 'namespace'.

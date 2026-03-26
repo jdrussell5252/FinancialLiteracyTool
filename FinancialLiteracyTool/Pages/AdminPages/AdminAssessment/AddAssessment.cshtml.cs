@@ -1,6 +1,7 @@
 using FinancialLiteracyTool.Model.Assessments;
 using FinancialLiteracyTool.Model.Questions;
 using FinancialLiteracyTool.MyAppHelper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -9,6 +10,7 @@ using System.Security.Claims;
 
 namespace FinancialLiteracyTool.Pages.AdminPages.AdminAssessment
 {
+    [Authorize]
     [BindProperties]
     public class AddAssessmentModel : PageModel
     {

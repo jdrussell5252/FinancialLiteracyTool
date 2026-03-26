@@ -76,5 +76,5 @@ namespace FinancialLiteracyTool.Pages.CoachPages
             }
         }//End of 'CheckIfUserIsAdmin'.
         /*--------------------ADMIN PRIV----------------------*/
-    }// End of '' Class.
+    }// End of 'AssignAssessment' Class.
 }// End of 'namespace'.

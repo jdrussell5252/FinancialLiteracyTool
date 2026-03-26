@@ -15,10 +15,8 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Users
     {
         public List<SelectListItem> Coaches { get; set; } = new();
         public int? SelectedCoachID { get; set; }
-
         public bool HasCoach { get; set; }
         public bool IsAdmin { get; set; }
-        //public bool IsCoach { get; set; }
         public ProfileView Profile { get; set; }
 
         public void OnGet(int id)
@@ -38,7 +36,7 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Users
             CheckIfUserHasCoach(id);
         }//End of 'OnGet'.
 
-        public IActionResult OnPost(int id)
+        /*public IActionResult OnPost(int id)
         {
             if (ModelState.IsValid)
             {
@@ -98,7 +96,98 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Users
                 OnGet(Profile.SystemUserID);
                 return Page();
             }
-        }//End of 'OnPost'.
+        }//End of 'OnPost'.*/
+
+        public IActionResult OnPost(int id)
+        {
+            if (ModelState.IsValid)
+            {
+                using (SqlConnection conn = new SqlConnection(AppHelper.GetDBConnectionString()))
+                {
+                    conn.Open();
+
+                    // Update user
+                    string cmdText = @"
+                UPDATE SystemUser
+                SET SystemUserFName = @SystemUserFName,
+                    SystemUserLName = @SystemUserLName,
+                    SystemUsername = @SystemUsername,
+                    SystemUserRole = @SystemUserRole
+                WHERE SystemUserID = @SystemUserID;";
+
+                    SqlCommand cmd = new SqlCommand(cmdText, conn);
+                    cmd.Parameters.AddWithValue("@SystemUserFName", Profile.SystemUserFirstName);
+                    cmd.Parameters.AddWithValue("@SystemUserLName", Profile.SystemUserLastName);
+                    cmd.Parameters.AddWithValue("@SystemUsername", Profile.SystemUserName);
+                    cmd.Parameters.AddWithValue("@SystemUserRole", Profile.SystemUserRole);
+                    cmd.Parameters.AddWithValue("@SystemUserID", id);
+                    cmd.ExecuteNonQuery();
+
+                    // If role is User
+                    if (Profile.SystemUserRole == 1)
+                    {
+                        if (SelectedCoachID.HasValue)
+                        {
+                            // Check if assignment exists
+                            string checkCoachText = "SELECT COUNT(*) FROM CoachedUsers WHERE SystemUserID = @SystemUserID;";
+                            SqlCommand checkCmd = new SqlCommand(checkCoachText, conn);
+                            checkCmd.Parameters.AddWithValue("@SystemUserID", id);
+
+                            int count = (int)checkCmd.ExecuteScalar();
+
+                            if (count == 0)
+                            {
+                                // Insert coach assignment
+                                string insertCoachText = @"
+                            INSERT INTO CoachedUsers (SystemUserID, CoachID)
+                            VALUES (@SystemUserID, @CoachID);";
+
+                                SqlCommand insertCmd = new SqlCommand(insertCoachText, conn);
+                                insertCmd.Parameters.AddWithValue("@SystemUserID", id);
+                                insertCmd.Parameters.AddWithValue("@CoachID", SelectedCoachID.Value);
+                                insertCmd.ExecuteNonQuery();
+                            }
+                            else
+                            {
+                                // Update coach assignment
+                                string updateCoachText = @"
+                            UPDATE CoachedUsers
+                            SET CoachID = @CoachID
+                            WHERE SystemUserID = @SystemUserID;";
+
+                                SqlCommand updateCmd = new SqlCommand(updateCoachText, conn);
+                                updateCmd.Parameters.AddWithValue("@SystemUserID", id);
+                                updateCmd.Parameters.AddWithValue("@CoachID", SelectedCoachID.Value);
+                                updateCmd.ExecuteNonQuery();
+                            }
+                        }
+                        else
+                        {
+                            // User role but No Coach selected -> remove assignment
+                            string deleteCoachText = "DELETE FROM CoachedUsers WHERE SystemUserID = @SystemUserID;";
+                            SqlCommand deleteCmd = new SqlCommand(deleteCoachText, conn);
+                            deleteCmd.Parameters.AddWithValue("@SystemUserID", id);
+                            deleteCmd.ExecuteNonQuery();
+                        }
+                    }
+                    else
+                    {
+                        // Not a normal user -> remove any coach assignment
+                        string deleteCoachText = "DELETE FROM CoachedUsers WHERE SystemUserID = @SystemUserID;";
+                        SqlCommand deleteCmd = new SqlCommand(deleteCoachText, conn);
+                        deleteCmd.Parameters.AddWithValue("@SystemUserID", id);
+                        deleteCmd.ExecuteNonQuery();
+                    }
+                }
+
+                return RedirectToPage("/AdminPages/Users/BrowseUsers");
+            }
+            else
+            {
+                OnGet(Profile.SystemUserID);
+                return Page();
+            }
+        }// End of 'OnPost'.
 
         public void PopulateSystemUserInfo(int id)
         {
@@ -161,7 +250,7 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Users
 
                 HasCoach = count > 0;
             }
-        }// End of ''.
+        }// End of 'CheckIfUserHasCoach'.
 
         private void PopulateAssignedCoach(int userId)
         {
@@ -187,7 +276,7 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Users
                     SelectedCoachID = null;
                 }
             }
-        }// End of ''.
+        }// End of 'PopulateAssignedCoach'.
 
         /*--------------------ADMIN PRIV----------------------*/
         private void CheckIfUserIsAdmin(int userId)
@@ -213,5 +302,5 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Users
             }
         }//End of 'CheckIfUserIsAdmin'.
         /*--------------------ADMIN PRIV----------------------*/
-    }// End of '' Class.
+    }// End of 'EditUsers' Class.
 }// End of 'namespace'.

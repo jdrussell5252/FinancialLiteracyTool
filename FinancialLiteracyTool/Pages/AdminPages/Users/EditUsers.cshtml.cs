@@ -13,6 +13,10 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Users
     [Authorize]
     public class EditUsersModel : PageModel
     {
+        public List<SelectListItem> Coaches { get; set; } = new();
+        public int? SelectedCoachID { get; set; }
+
+        public bool HasCoach { get; set; }
         public bool IsAdmin { get; set; }
         //public bool IsCoach { get; set; }
         public ProfileView Profile { get; set; }
@@ -29,6 +33,8 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Users
             }
             /*--------------------ADMIN PRIV----------------------*/
             PopulateSystemUserInfo(id);
+            PopulateCoaches();
+            CheckIfUserHasCoach(id);
         }//End of 'OnGet'.
 
         public IActionResult OnPost(int id)
@@ -81,6 +87,43 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Users
                 }
             }
         }// End of 'PopulateSystemUserInfo'.
+
+        private void PopulateCoaches()
+        {
+            using (SqlConnection conn = new SqlConnection(AppHelper.GetDBConnectionString()))
+            {
+                string cmdText = "SELECT SystemUserID, SystemUserFName + ' ' + SystemUserLName AS FullName FROM SystemUser WHERE SystemUserRole = 2";
+
+                SqlCommand cmd = new SqlCommand(cmdText, conn);
+                conn.Open();
+
+                SqlDataReader reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    Coaches.Add(new SelectListItem
+                    {
+                        Value = reader["SystemUserID"].ToString(),
+                        Text = reader["FullName"].ToString()
+                    });
+                }
+            }
+        }// End of 'PopulateCoaches'.
+
+        private void CheckIfUserHasCoach(int userId)
+        {
+            using (SqlConnection conn = new SqlConnection(AppHelper.GetDBConnectionString()))
+            {
+                string cmdText = "SELECT COUNT(*) FROM CoachedUsers WHERE SystemUserID = @UserID";
+                SqlCommand cmd = new SqlCommand(cmdText, conn);
+                cmd.Parameters.AddWithValue("@UserID", userId);
+
+                conn.Open();
+                int count = (int)cmd.ExecuteScalar();
+
+                HasCoach = count > 0;
+            }
+        }
 
         /*--------------------ADMIN PRIV----------------------*/
         private void CheckIfUserIsAdmin(int userId)

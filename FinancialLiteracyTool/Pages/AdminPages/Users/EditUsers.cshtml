@@ -52,6 +52,16 @@
                     <span asp-validation-for="Profile.SystemUserRole" class="text-danger"></span>
                 </div>
             </div>
+            <div class="row my-2" id="coachDropdownContainer" style="display:none;">
+                <div class="col-4">
+                    <label class="form-label" id="LabelText">Assign Coach:</label>
+                </div>
+                <div class="col-12">
+                    <select asp-for="SelectedCoachID" asp-items="Model.Coaches" class="form-control">
+                        <option value="">-- Select Coach --</option>
+                    </select>
+                </div>
+            </div>
         <div class="row my-2">
             <div class="col-12">
                 <button type="submit" class="form-control btn btn-primary">Confirm Edit</button>
@@ -59,3 +69,27 @@
         </div>
     </form>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const roleDropdown = document.querySelector('[name="Profile.SystemUserRole"]');
+        const coachContainer = document.getElementById("coachDropdownContainer");
+
+        // You pass this from backend
+        const hasCoach = @Model.HasCoach.ToString().ToLower();
+
+        function toggleCoachDropdown() {
+            if (roleDropdown.value === "1" && !hasCoach) {
+                coachContainer.style.display = "block";
+            } else {
+                coachContainer.style.display = "none";
+            }
+        }
+
+        // Initial check
+        toggleCoachDropdown();
+
+        // On change
+        roleDropdown.addEventListener("change", toggleCoachDropdown);
+    });
+</script>

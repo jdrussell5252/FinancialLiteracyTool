@@ -57,13 +57,88 @@ namespace FinancialLiteracyTool.Pages.AdminPages.AdminAssessment
             }
         }//End of 'OnGet'.
 
-        //public IActionResult OnPostDelete(int id) { }
+        // Delete handler: deletes the selected assessment and related rows.
+        public IActionResult OnPostDelete(int id)
+        {
+            // Ensure user is authenticated and an admin
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null)
+            {
+                TempData["ErrorMessage"] = "You must be signed in to delete an assessment.";
+                return RedirectToPage();
+            }
+
+            int userId = int.Parse(userIdClaim.Value);
+            CheckIfUserIsAdmin(userId);
+            if (!IsAdmin)
+            {
+                TempData["ErrorMessage"] = "Only administrators can delete assessments.";
+                return RedirectToPage();
+            }
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(AppHelper.GetDBConnectionString()))
+                {
+                    conn.Open();
+
+                    using (var tran = conn.BeginTransaction())
+                    {
+                        try
+                        {
+                            // Remove any question links first (FK constraints)
+                            using (var deleteQ = new SqlCommand("DELETE FROM AssessmentQuestion WHERE AssessmentID = @AssessmentID", conn, tran))
+                            {
+                                deleteQ.Parameters.AddWithValue("@AssessmentID", id);
+                                deleteQ.ExecuteNonQuery();
+                            }
+
+                            // Remove any area links
+                            using (var deleteA = new SqlCommand("DELETE FROM AssessmentArea WHERE AssessmentID = @AssessmentID", conn, tran))
+                            {
+                                deleteA.Parameters.AddWithValue("@AssessmentID", id);
+                                deleteA.ExecuteNonQuery();
+                            }
+
+                            // Finally remove the assessment itself
+                            using (var deleteAssessment = new SqlCommand("DELETE FROM Assessment WHERE AssessmentID = @AssessmentID", conn, tran))
+                            {
+                                deleteAssessment.Parameters.AddWithValue("@AssessmentID", id);
+                                int affected = deleteAssessment.ExecuteNonQuery();
+                                if (affected == 0)
+                                {
+                                    tran.Rollback();
+                                    TempData["ErrorMessage"] = "Assessment not found.";
+                                    return RedirectToPage();
+                                }
+                            }
+
+                            tran.Commit();
+                        }
+                        catch (Exception ex)
+                        {
+                            tran.Rollback();
+                            TempData["ErrorMessage"] = $"Delete failed: {ex.Message}";
+                            return RedirectToPage();
+                        }
+                    }
+                }
+
+                return RedirectToPage();
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"Delete failed: {ex.Message}";
+                return RedirectToPage();
+            }
+        }
 
         private void PopulateAssessments()
         {
             using (SqlConnection conn = new SqlConnection(AppHelper.GetDBConnectionString()))
             {
-                string query = "SELECT AssessmentID, AssessmentName FROM Assessment";
+                // include description for display on browse page
+                string query = "SELECT AssessmentID, AssessmentName, ISNULL(AssessmentDescription, '') AS AssessmentDescription FROM Assessment";
                 SqlCommand cmd = new SqlCommand(query, conn);
                 conn.Open();
                 SqlDataReader reader = cmd.ExecuteReader();
@@ -74,7 +149,8 @@ namespace FinancialLiteracyTool.Pages.AdminPages.AdminAssessment
                         BrowseAssessment aAssessment = new BrowseAssessment
                         {
                             AssessmentID = reader.GetInt32(0),
-                            AssessmentName = reader.GetString(1),
+                            AssessmentName = reader.IsDBNull(1) ? string.Empty : reader.GetString(1),
+                            AssessmentDescription = reader.IsDBNull(2) ? string.Empty : reader.GetString(2)
                         };
                         Assessments.Add(aAssessment);
 

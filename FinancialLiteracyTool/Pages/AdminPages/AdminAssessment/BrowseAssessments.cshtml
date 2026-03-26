@@ -44,6 +44,13 @@
                                 @LocalAssessment.AssessmentName
                             </h5>
 
+                            @if (!string.IsNullOrWhiteSpace(LocalAssessment.AssessmentDescription))
+                            {
+                            <p class="card-text text-muted small">
+                                @LocalAssessment.AssessmentDescription
+                            </p>
+                            }
+
                         </div>
 
                         <div class="card-footer d-flex justify-content-between">

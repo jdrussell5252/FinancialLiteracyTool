@@ -86,7 +86,21 @@ namespace FinancialLiteracyTool.Pages.AdminPages.AdminAssessment
             else
             {
 
-                // If the model state is not valid, return to the same page with validation errors
+                // If the model state is not valid, repopulate dropdowns so the page renders correctly with validation messages
+
+                // Re-evaluate admin privilege so any admin UI remains correct after postback
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                if (userIdClaim != null)
+                {
+                    int userId = int.Parse(userIdClaim.Value);
+                    CheckIfUserIsAdmin(userId);
+                }
+
+                // Repopulate the assessment area list and questions for the selected area
+                PopulateAssessmentAreaList();
+                PopulateQuestionAreaList(SelectedAssessmentAreaID);
+
+
                 return Page();
             }
         }// End of 'OnPost'.

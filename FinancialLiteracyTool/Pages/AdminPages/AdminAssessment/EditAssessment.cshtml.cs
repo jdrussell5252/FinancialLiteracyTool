@@ -172,7 +172,7 @@ namespace FinancialLiteracyTool.Pages.AdminPages.AdminAssessment
                 conn.Open();
 
                 // Load Assessment basic info
-                using (SqlCommand cmd = new SqlCommand("SELECT AssessmentID, AssessmentName FROM Assessment WHERE AssessmentID = @AssessmentID", conn))
+                using (SqlCommand cmd = new SqlCommand("SELECT AssessmentID, AssessmentName, AssessmentDescription FROM Assessment WHERE AssessmentID = @AssessmentID", conn))
                 {
                     cmd.Parameters.AddWithValue("@AssessmentID", id);
                     using var reader = cmd.ExecuteReader();
@@ -180,6 +180,8 @@ namespace FinancialLiteracyTool.Pages.AdminPages.AdminAssessment
                     {
                         EditAssessment.AssessmentID = reader.IsDBNull(0) ? 0 : reader.GetInt32(0);
                         EditAssessment.AssessmentName = reader.IsDBNull(1) ? string.Empty : reader.GetString(1);
+                        EditAssessment.AssessmentDescription = reader.IsDBNull(2) ? string.Empty : reader.GetString(2);
+
                     }
                 }
 

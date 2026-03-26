@@ -39,6 +39,15 @@
             </div>
         </div>
 
+        <!-- Assessment Description -->
+        <div class="row mb-3">
+            <div class="col-12">
+                <label asp-for="EditAssessment.AssessmentDescription" class="form-label fw-bold">Assessment Description</label>
+                <textarea asp-for="EditAssessment.AssessmentDescription" class="form-control" rows="4" maxlength="100"></textarea>
+                <span asp-validation-for="EditAssessment.AssessmentDescription" class="text-danger"></span>
+            </div>
+        </div>
+
         <!-- Questions -->
         <div class="row mb-3">
             <div class="col-12">

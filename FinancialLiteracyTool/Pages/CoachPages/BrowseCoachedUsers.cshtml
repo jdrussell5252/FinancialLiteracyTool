@@ -1,0 +1,56 @@
+﻿@page
+@model FinancialLiteracyTool.Pages.CoachPages.BrowseCoachedUsersModel
+@{
+}
+
+<div class="row text-center">
+    <div class="col-12">
+        <label class="form-label fs-1" id="LabelText">Browse Coached Users</label>
+    </div>
+</div>
+
+@if (Model.Users.Count != 0)
+{
+
+    <div class="row">
+
+        @foreach (var u in Model.Users)
+        {
+            <div class="col-md-6 col-lg-4 mb-4">
+
+                <div class="card shadow-sm h-100">
+
+                    <div class="card-body">
+
+                        <!-- Name -->
+                        <h5 class="card-title mb-2">
+                            @u.UserFName @u.UserLName
+                        </h5>
+
+                        <!-- User ID -->
+                        <p class="text-muted">
+                            User ID: @u.UserID
+                        </p>
+
+                    </div>
+
+                    <div class="card-footer d-flex justify-content-between">
+
+                    </div>
+
+                </div>
+
+            </div>
+        }
+
+    </div>
+
+}
+else
+{
+    <div class="text-center mt-4">
+        <h4>No users yet.</h4>
+    </div>
+}
+
+</div>

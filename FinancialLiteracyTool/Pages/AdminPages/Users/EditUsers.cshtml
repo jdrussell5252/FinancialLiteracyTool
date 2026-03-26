@@ -79,7 +79,7 @@
         const hasCoach = @Model.HasCoach.ToString().ToLower();
 
         function toggleCoachDropdown() {
-            if (roleDropdown.value === "1" && !hasCoach) {
+            if (roleDropdown.value === "1") {
                 coachContainer.style.display = "block";
             } else {
                 coachContainer.style.display = "none";

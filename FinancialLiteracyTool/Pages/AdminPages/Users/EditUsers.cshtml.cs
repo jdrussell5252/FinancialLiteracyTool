@@ -34,6 +34,7 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Users
             /*--------------------ADMIN PRIV----------------------*/
             PopulateSystemUserInfo(id);
             PopulateCoaches();
+            PopulateAssignedCoach(id);
             CheckIfUserHasCoach(id);
         }//End of 'OnGet'.
 
@@ -52,6 +53,43 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Users
                     cmd.Parameters.AddWithValue("@SystemUserID", id);
                     conn.Open();
                     cmd.ExecuteNonQuery();
+
+                    // 2. Only assign a coach if the role is User (1) and a coach was selected
+                    if (Profile.SystemUserRole == 1 && SelectedCoachID.HasValue)
+                    {
+                        // Check if this user already has a coach assigned
+                        string checkCoachText = "SELECT COUNT(*) FROM CoachedUsers WHERE SystemUserID = @SystemUserID;";
+                        SqlCommand checkCmd = new SqlCommand(checkCoachText, conn);
+                        checkCmd.Parameters.AddWithValue("@SystemUserID", id);
+
+                        int count = (int)checkCmd.ExecuteScalar();
+
+                        if (count == 0)
+                        {
+                            // Insert new coach assignment
+                            string insertCoachText = @"
+                        INSERT INTO CoachedUsers (SystemUserID, CoachID)
+                        VALUES (@SystemUserID, @CoachID);";
+
+                            SqlCommand insertCmd = new SqlCommand(insertCoachText, conn);
+                            insertCmd.Parameters.AddWithValue("@SystemUserID", id);
+                            insertCmd.Parameters.AddWithValue("@CoachID", SelectedCoachID.Value);
+                            insertCmd.ExecuteNonQuery();
+                        }
+                        else
+                        {
+                            // Update existing coach assignment
+                            string updateCoachText = @"
+                        UPDATE CoachedUsers
+                        SET CoachID = @CoachID
+                        WHERE SystemUserID = @SystemUserID;";
+
+                            SqlCommand updateCmd = new SqlCommand(updateCoachText, conn);
+                            updateCmd.Parameters.AddWithValue("@SystemUserID", id);
+                            updateCmd.Parameters.AddWithValue("@CoachID", SelectedCoachID.Value);
+                            updateCmd.ExecuteNonQuery();
+                        }
+                    }
                 }
                 return RedirectToPage("/AdminPages/Users/BrowseUsers");
             }
@@ -123,7 +161,33 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Users
 
                 HasCoach = count > 0;
             }
-        }
+        }// End of ''.
+
+        private void PopulateAssignedCoach(int userId)
+        {
+            using (SqlConnection conn = new SqlConnection(AppHelper.GetDBConnectionString()))
+            {
+                string cmdText = @"
+            SELECT CoachID
+            FROM CoachedUsers
+            WHERE SystemUserID = @SystemUserID;";
+
+                SqlCommand cmd = new SqlCommand(cmdText, conn);
+                cmd.Parameters.AddWithValue("@SystemUserID", userId);
+
+                conn.Open();
+                object result = cmd.ExecuteScalar();
+
+                if (result != null)
+                {
+                    SelectedCoachID = Convert.ToInt32(result);
+                }
+                else
+                {
+                    SelectedCoachID = null;
+                }
+            }
+        }// End of ''.
 
         /*--------------------ADMIN PRIV----------------------*/
         private void CheckIfUserIsAdmin(int userId)

@@ -6,7 +6,7 @@
         public string? SystemUserLastName { get; set; }
         //public string SystemUserProfileImage { get; set; }
         public string? SystemUserName { get; set; }
-        public string? AccountTypeID { get; set; }
+        public int? SystemUserRole { get; set; }
         public IFormFile? SystemUserProfileImage { get; set; }
         public string? SystemUserProfileImagePath { get; set; }
         public int SystemUserID { get; set; }

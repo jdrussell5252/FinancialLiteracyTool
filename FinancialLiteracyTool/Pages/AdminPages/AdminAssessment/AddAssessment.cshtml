@@ -25,6 +25,18 @@
         </div>
         <!--===================End of Assessment Name Textbox==================-->
 
+        <!--===================Assessment Description Textbox==================-->
+        <div class="row">
+            <div class="col-4">
+                <label asp-for="NewAssessment.AssessmentDescription" class="form-label" id="LabelText">Assessment Description:</label>
+            </div>
+            <div class="col-12">
+                <input asp-for="NewAssessment.AssessmentDescription" type="text" class="form-control" />
+                <span asp-validation-for="NewAssessment.AssessmentDescription" class="text-danger"></span>
+            </div>
+        </div>
+        <!--===================End of Assessment Description Textbox==================-->
+
         <!--===================Assessment Area Textbox==================-->
         <div class="row">
             <div class="col-4">

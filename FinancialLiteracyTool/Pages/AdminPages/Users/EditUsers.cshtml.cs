@@ -42,7 +42,7 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Users
                     cmd.Parameters.AddWithValue("@SystemUserFName", Profile.SystemUserFirstName);
                     cmd.Parameters.AddWithValue("@SystemUserLName", Profile.SystemUserLastName);
                     cmd.Parameters.AddWithValue("@SystemUsername", Profile.SystemUserName);
-                    cmd.Parameters.AddWithValue("@SystemUserRole", IsAdmin);
+                    cmd.Parameters.AddWithValue("@SystemUserRole", Profile.SystemUserRole);
                     cmd.Parameters.AddWithValue("@SystemUserID", id);
                     conn.Open();
                     cmd.ExecuteNonQuery();
@@ -74,8 +74,9 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Users
                             SystemUserFirstName = reader.GetString(0),
                             SystemUserLastName = reader.GetString(1),
                             SystemUserName = reader.GetString(2),
+                            SystemUserRole = reader.GetInt32(3)
                         };
-                        //IsAdmin = reader.GetInt32(3);
+
                     }
                 }
             }

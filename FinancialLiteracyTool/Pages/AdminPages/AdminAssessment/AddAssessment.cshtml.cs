@@ -48,10 +48,10 @@ namespace FinancialLiteracyTool.Pages.AdminPages.AdminAssessment
                 {
 
                     conn.Open();
-                    string insertcmdText = "INSERT INTO Assessment (AssessmentName) VALUES (@AssessmentName);";
+                    string insertcmdText = "INSERT INTO Assessment (AssessmentName, AssessmentDescription) VALUES (@AssessmentName, @AssessmentDescription);";
                     SqlCommand insertcmd = new SqlCommand(insertcmdText, conn);
                     insertcmd.Parameters.AddWithValue("@AssessmentName", NewAssessment.AssessmentName);
-
+                    insertcmd.Parameters.AddWithValue("@AssessmentDescription", NewAssessment.AssessmentDescription);
                     insertcmd.ExecuteScalar();
 
                     int newAssessmentId;

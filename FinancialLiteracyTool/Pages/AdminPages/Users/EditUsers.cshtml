@@ -39,17 +39,19 @@
             </div>
         </div>
         <div class="row my-2">
-            <div class="col-6">
-                <input asp-for="IsAdmin" type="checkbox" /> Is Admin?
-                <span asp-validation-for="IsAdmin" value="IsAdmin"></span>
+            <div class="row my-2">
+                <div class="col-4">
+                    <label asp-for="Profile.SystemUserRole" class="form-label" id="LabelText">Role:</label>
+                </div>
+                <div class="col-12">
+                    <select asp-for="Profile.SystemUserRole" class="form-control">
+                        <option value="1">User</option>
+                        <option value="2">Coach</option>
+                        <option value="3">Admin</option>
+                    </select>
+                    <span asp-validation-for="Profile.SystemUserRole" class="text-danger"></span>
+                </div>
             </div>
-
-
-            <!--<div class="col-6">
-                <input asp-for="Profile.AccountTypeID" type="text" class="form-control" />
-                <span asp-validation-for="Profile.AccountTypeID" class="text-danger"></span>
-            </div>-->
-        </div>
         <div class="row my-2">
             <div class="col-12">
                 <button type="submit" class="form-control btn btn-primary">Confirm Edit</button>

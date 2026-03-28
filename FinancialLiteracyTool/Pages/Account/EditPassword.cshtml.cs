@@ -1,18 +1,24 @@
+using FinancialLiteracyTool.Model.LoginRegistration;
+using FinancialLiteracyTool.Model.Users;
 using FinancialLiteracyTool.MyAppHelper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Data.SqlClient;
 using System.Security.Claims;
+using System.Text.RegularExpressions;
 
 namespace FinancialLiteracyTool.Pages.Account
 {
     [Authorize]
     public class EditPasswordModel : PageModel
     {
+        [BindProperty]
+        public Password Profile { get; set; }
+        public List<string> PasswordErrors { get; set; } = new();
         public bool IsAdmin { get; set; }
 
-        public void OnGet()
+        public void OnGet(int id)
         {
 
             // Safely access the NameIdentifier claim
@@ -25,6 +31,48 @@ namespace FinancialLiteracyTool.Pages.Account
             }
             /*--------------------ADMIN PRIV----------------------*/
         }//End of 'OnGet'.
+
+        public IActionResult OnPost(int id)
+        {
+            PasswordErrors.Clear();
+            string password = (Profile.MyPassword ?? string.Empty).Trim();
+            const int dbMaxPassword = 20;
+
+
+            if (password.Length < 10)
+                PasswordErrors.Add("Password must be at least 10 characters long.");
+            if (!Regex.IsMatch(password, @"\d"))
+                PasswordErrors.Add("Password must contain at least one number.");
+            if (!Regex.IsMatch(password, @"[A-Z]"))
+                PasswordErrors.Add("Password must contain at least one uppercase letter.");
+            if (!Regex.IsMatch(password, @"[a-z]"))
+                PasswordErrors.Add("Password must contain at least one lowercase letter.");
+
+            if (password.Length > dbMaxPassword)
+            {
+                ModelState.AddModelError("NewUser.Password", "Password must be at most 50 characters.");
+            }
+
+            if (ModelState.IsValid)
+            {
+                using (SqlConnection conn = new SqlConnection(AppHelper.GetDBConnectionString()))
+                {
+                    conn.Open();
+
+                    string cmdSystemUserText = "UPDATE SystemUser SET SystemUserPassword = @SystemUserPassword WHERE SystemUserID = @SystemUserID;";
+                    SqlCommand cmdS = new SqlCommand(cmdSystemUserText, conn);
+                    cmdS.Parameters.AddWithValue("@SystemUserID", id);
+                    cmdS.Parameters.AddWithValue("@SystemUserPassword", AppHelper.GeneratePasswordHash(Profile.MyPassword));
+                    cmdS.ExecuteNonQuery();
+
+                }
+                return RedirectToPage("/Account/Profile");
+            }
+            else
+            {
+                return Page();
+            }
+        }//End of 'OnPost'.
 
         /*--------------------ADMIN PRIV----------------------*/
         private void CheckIfUserIsAdmin(int userId)

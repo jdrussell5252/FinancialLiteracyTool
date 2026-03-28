@@ -31,14 +31,14 @@ namespace FinancialLiteracyTool.Pages.Account
         {
             using (SqlConnection conn = new SqlConnection(AppHelper.GetDBConnectionString()))
             {
-                string cmdText = "SELECT IsAdmin FROM SystemUser WHERE SystemUserID = @SystemUserID";
+                string cmdText = "SELECT SystemUserRole FROM SystemUser WHERE SystemUserID = @SystemUserID";
                 SqlCommand cmd = new SqlCommand(cmdText, conn);
                 cmd.Parameters.AddWithValue("@SystemUserID", userId);
                 conn.Open();
                 var result = cmd.ExecuteScalar();
 
                 // If SystemUserRole is 2, set IsUserAdmin to true
-                if (result != null && result.ToString() == "1")
+                if (Convert.ToInt32(result) == 3)
                 {
                     IsAdmin = true;
                     ViewData["IsAdmin"] = true;

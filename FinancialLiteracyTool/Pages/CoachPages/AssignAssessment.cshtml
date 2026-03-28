@@ -3,8 +3,22 @@
 @{
 }
 
-<div class="row text-center">
-    <div class="col-12">
-        <label class="form-label fs-1" id="LabelText">Assign Assessment</label>
+<div class="container mt-4">
+    <div class="row text-center">
+        <div class="col-12">
+            <label class="form-label fs-1" id="LabelText">Edit User</label>
+        </div>
     </div>
+
+    <form method="post" enctype="multipart/form-data">
+        <div class="row my-2">
+            <div class="col-12">
+                <label asp-for="Profile.SystemUserFirstName" class="form-label" id="LabelText">Change First Name:</label>
+            </div>
+            <div class="col-12">
+                <input asp-for="Profile.SystemUserFirstName" type="text" class="form-control" />
+                <span asp-validation-for="Profile.SystemUserFirstName" class="text-danger"></span>
+            </div>
+        </div>
+    </form>
 </div>

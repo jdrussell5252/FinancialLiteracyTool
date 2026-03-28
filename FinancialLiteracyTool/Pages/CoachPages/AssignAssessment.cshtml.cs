@@ -1,9 +1,11 @@
 using FinancialLiteracyTool.MyAppHelper;
+using FinancialLiteracyTool.Model.Assessments;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Data.SqlClient;
 using System.Security.Claims;
+using FinancialLiteracyTool.Model.Users;
 
 namespace FinancialLiteracyTool.Pages.CoachPages
 {
@@ -12,6 +14,8 @@ namespace FinancialLiteracyTool.Pages.CoachPages
     {
         public bool IsAdmin { get; set; }
         public bool IsCoach { get; set; }
+        public ProfileView Profile {  get; set; }
+        public List<BrowseAssessment> Assessments { get; set; } = new List<BrowseAssessment>();
         public IActionResult OnGet(int id)
         {
             // Safely access the NameIdentifier claim
@@ -26,6 +30,32 @@ namespace FinancialLiteracyTool.Pages.CoachPages
             /*--------------------ADMIN PRIV----------------------*/
             return Page();
         }//End of 'OnGet'.
+
+        private void PopulateAssessments()
+        {
+            using (SqlConnection conn = new SqlConnection(AppHelper.GetDBConnectionString()))
+            {
+                // include description for display on browse page
+                string query = "SELECT AssessmentID, AssessmentName, AssessmentDescription FROM Assessment";
+                SqlCommand cmd = new SqlCommand(query, conn);
+                conn.Open();
+                SqlDataReader reader = cmd.ExecuteReader();
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        BrowseAssessment aAssessment = new BrowseAssessment
+                        {
+                            AssessmentID = reader.GetInt32(0),
+                            AssessmentName = reader.GetString(1),
+                            AssessmentDescription = reader.GetString(2)
+                        };
+                        Assessments.Add(aAssessment);
+
+                    }
+                }
+            }
+        }// End of 'PopulateAssessments'.
 
         /*--------------------COACH PRIV----------------------*/
         private void CheckIfUserIsCoach(int userId)

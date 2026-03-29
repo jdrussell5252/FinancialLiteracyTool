@@ -11,22 +11,26 @@ namespace FinancialLiteracyTool.Pages.CoachPages
     [Authorize]
     public class BrowseCoachedUsersModel : PageModel
     {
-        public bool IsAdmin { get; set; }
         public bool IsCoach { get; set; }
         public List<SystemUserView> Users { get; set; } = new List<SystemUserView>();
         public IActionResult OnGet()
         {
+
             // Safely access the NameIdentifier claim
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
             /*--------------------ADMIN PRIV----------------------*/
             if (userIdClaim != null)
             {
                 int userId = int.Parse(userIdClaim.Value); // Use the claim value only if it exists
-                CheckIfUserIsAdmin(userId);
                 CheckIfUserIsCoach(userId);
                 PopulateUserList(userId);
             }
             /*--------------------ADMIN PRIV----------------------*/
+
+            if (!IsCoach)
+            {
+                return Forbid();
+            }
 
             return Page();
         }//End of 'OnGet'.
@@ -92,29 +96,5 @@ namespace FinancialLiteracyTool.Pages.CoachPages
         }//End of 'CheckIfUserIsCoach'.
         /*--------------------END OF COACH PRIV----------------------*/
 
-        /*--------------------ADMIN PRIV----------------------*/
-        private void CheckIfUserIsAdmin(int userId)
-        {
-            using (SqlConnection conn = new SqlConnection(AppHelper.GetDBConnectionString()))
-            {
-                string cmdText = "SELECT SystemUserRole FROM SystemUser WHERE SystemUserID = @SystemUserID";
-                SqlCommand cmd = new SqlCommand(cmdText, conn);
-                cmd.Parameters.AddWithValue("@SystemUserID", userId);
-                conn.Open();
-                var result = cmd.ExecuteScalar();
-
-                // If SystemUserRole is 2, set IsUserAdmin to true
-                if (Convert.ToInt32(result) == 3)
-                {
-                    IsAdmin = true;
-                    ViewData["IsAdmin"] = true;
-                }
-                else
-                {
-                    IsAdmin = false;
-                }
-            }
-        }//End of 'CheckIfUserIsAdmin'.
-        /*--------------------ADMIN PRIV----------------------*/
     }// End of '' Class.
 }// End of 'namespace'.

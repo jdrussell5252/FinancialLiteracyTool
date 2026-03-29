@@ -27,7 +27,7 @@ namespace FinancialLiteracyTool.Pages.AdminPages.AdminAssessment
         public List<SelectListItem> QuestionOptions { get; set; } = new();
 
         // Accept id as query or route parameter
-        public void OnGet(int? id)
+        public IActionResult OnGet(int? id)
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
             if (userIdClaim != null)
@@ -36,15 +36,12 @@ namespace FinancialLiteracyTool.Pages.AdminPages.AdminAssessment
                 CheckIfUserIsAdmin(userId);
             }
 
-            PopulateAssessmentAreaList();
-
-            if (!id.HasValue)
+            if (!IsAdmin)
             {
-                // No id supplied - nothing to load
-                return;
-                // Alternatively, could redirect to BrowseAssessments or show an error
-                // return RedirectToPage("BrowseAssessments");
+                return Forbid();
             }
+
+            PopulateAssessmentAreaList();
 
             LoadAssessment(id.Value);
 
@@ -52,6 +49,8 @@ namespace FinancialLiteracyTool.Pages.AdminPages.AdminAssessment
             {
                 PopulateQuestionAreaList(SelectedAssessmentAreaID.Value);
             }
+
+            return Page();
         }// End of 'OnGet'.
 
         public IActionResult OnPost()

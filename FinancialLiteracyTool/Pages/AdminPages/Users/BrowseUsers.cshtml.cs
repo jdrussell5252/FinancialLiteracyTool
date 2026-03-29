@@ -31,6 +31,11 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Users
             }
             /*--------------------ADMIN PRIV----------------------*/
 
+            if (!IsAdmin)
+            {
+                return Forbid();
+            }
+
             PopulateUserList();
 
             // === Pagination logic ===

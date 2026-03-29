@@ -43,7 +43,15 @@
                             }
 
                         </div>
+                        <div class="card-footer">
 
+                            <a asp-page="/UserPages/TakeAssessment"
+                               asp-route-id="@LocalAssessment.AssessmentID"
+                               class="btn btn-primary w-100 text-center">
+                                <i class="bi bi-pencil-square"></i> Take Assessment
+                            </a>
+
+                        </div>
                     </div>
 
                 </div>

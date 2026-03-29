@@ -54,7 +54,12 @@ namespace FinancialLiteracyTool.Pages.UserPages
             using (SqlConnection conn = new SqlConnection(AppHelper.GetDBConnectionString()))
             {
                 // include description for display on browse page
-                string query = "SELECT a.AssessmentID, a.AssessmentName, a.AssessmentDescription FROM Assessment AS a INNER JOIN UserAssessments AS ua ON ua.SystemUserID = a.SystemUserID WHERE ua.SystemUserID = @SystemUserID";
+                string query = @"
+    SELECT a.AssessmentName, a.AssessmentDescription
+    FROM UserAssessments AS ua
+    INNER JOIN Assessment AS a 
+        ON a.AssessmentID = ua.AssessmentID
+    WHERE ua.SystemUserID = @SystemUserID";
                 SqlCommand cmd = new SqlCommand(query, conn);
                 cmd.Parameters.AddWithValue("@SystemUserID", id);
                 conn.Open();
@@ -65,9 +70,8 @@ namespace FinancialLiteracyTool.Pages.UserPages
                     {
                         BrowseUserAssessment aAssessment = new BrowseUserAssessment
                         {
-                            AssessmentID = reader.GetInt32(0),
-                            AssessmentName = reader.GetString(1),
-                            AssessmentDescription = reader.GetString(2)
+                            AssessmentName = reader.GetString(0),
+                            AssessmentDescription = reader.GetString(1)
                         };
                         Assessments.Add(aAssessment);
 

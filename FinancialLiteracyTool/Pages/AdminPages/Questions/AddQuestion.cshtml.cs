@@ -24,7 +24,7 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Questions
         public int SelectedQuestionTypeID { get; set; }
         public int SelectedQuestionAreaID { get; set; }
 
-        public void OnGet()
+        public IActionResult OnGet()
         {
 
             // Safely access the NameIdentifier claim
@@ -37,8 +37,15 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Questions
             }
             /*--------------------ADMIN PRIV----------------------*/
 
+            if (!IsAdmin)
+            {
+                return Forbid();
+            }
+
             PopulateQuestionAreaList();
             PopulateQuestionTypeList();
+
+            return Page();
         }//End of 'OnGet'.
 
         public IActionResult OnPost(int id)

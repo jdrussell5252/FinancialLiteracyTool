@@ -8,3 +8,38 @@
         <label class="form-label fs-1" id="LabelText">Assign Assessment</label>
     </div>
 </div>
+
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h4 class="card-title mb-3">Assign to @Model.SelectedUserName</h4>
+
+                <form method="post">
+                    <input type="hidden" asp-for="SelectedUserID" />
+
+                    <div class="mb-3">
+                        <label asp-for="SelectedAssessmentID" class="form-label">Select Assessment</label>
+                        <select asp-for="SelectedAssessmentID" asp-items="Model.Assessments" class="form-select">
+                            <option value="0">-- Select an Assessment --</option>
+                        </select>
+                        <span asp-validation-for="SelectedAssessmentID" class="text-danger"></span>
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">
+                            Assign Assessment
+                        </button>
+                    </div>
+                </form>
+
+                @if (TempData["SuccessMessage"] != null)
+                {
+                    <div class="alert alert-success mt-3">
+                        @TempData["SuccessMessage"]
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

@@ -23,7 +23,7 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Questions
         public int? CorrectChoiceIndex { get; set; }
         public bool? TrueFalseCorrect { get; set; }
 
-        public void OnGet(int id)
+        public IActionResult OnGet(int id)
         {
             // Safely access the NameIdentifier claim
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
@@ -35,12 +35,19 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Questions
             }
             /*--------------------ADMIN PRIV----------------------*/
 
+            if (!IsAdmin)
+            {
+                return Forbid();
+            }
+
             PopulateCurrentQuestionArea(id);
             PopulateQuestionAreaList();
             PopulateQuestionText(id);
             PopulateCurrentQuestionType(id);
             PopulateQuestionTypeList();
             PopulateQuestionChoices(id);
+
+            return Page();
         }// End of 'OnGet'.
 
         public IActionResult OnPost(int id)

@@ -20,7 +20,8 @@ namespace FinancialLiteracyTool.Pages.AdminPages.AdminAssessment
         public int PageSize { get; set; } = 5;
         public int TotalCount { get; set; }
         public int TotalPages => Math.Max(1, (int)Math.Ceiling((double)TotalCount / Math.Max(1, PageSize)));
-        public void OnGet(int id, int pageNumber = 1, int pageSize = 5)
+        
+        public IActionResult OnGet(int id, int pageNumber = 1, int pageSize = 5)
         {
 
             // Safely access the NameIdentifier claim
@@ -32,6 +33,11 @@ namespace FinancialLiteracyTool.Pages.AdminPages.AdminAssessment
                 CheckIfUserIsAdmin(userId);
             }
             /*--------------------ADMIN PRIV----------------------*/
+
+            if (!IsAdmin)
+            {
+                return Forbid();
+            }
 
             PopulateAssessments();
 
@@ -55,6 +61,8 @@ namespace FinancialLiteracyTool.Pages.AdminPages.AdminAssessment
                     .Take(PageSize)
                     .ToList();
             }
+
+            return Page();
         }//End of 'OnGet'.
 
         // Delete handler: deletes the selected assessment and related rows.

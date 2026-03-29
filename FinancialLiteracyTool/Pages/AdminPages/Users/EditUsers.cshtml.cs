@@ -19,7 +19,7 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Users
         public bool IsAdmin { get; set; }
         public ProfileView Profile { get; set; }
 
-        public void OnGet(int id)
+        public IActionResult OnGet(int id)
         {
             // Safely access the NameIdentifier claim
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
@@ -30,10 +30,18 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Users
                 CheckIfUserIsAdmin(userId);
             }
             /*--------------------ADMIN PRIV----------------------*/
+
+            if (!IsAdmin)
+            {
+                return Forbid();
+            }
+
             PopulateSystemUserInfo(id);
             PopulateCoaches();
             PopulateAssignedCoach(id);
             CheckIfUserHasCoach(id);
+
+            return Page();
         }//End of 'OnGet'.
 
         /*public IActionResult OnPost(int id)

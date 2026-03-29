@@ -21,7 +21,8 @@ namespace FinancialLiteracyTool.Pages.AdminPages.AdminAssessment
 
         public List<int> SelectedQuestionIDs { get; set; } = new();
         public List<SelectListItem> QuestionOptions { get; set; } = new();
-        public void OnGet(int? areaId)
+        
+        public IActionResult OnGet(int? areaId)
         {
 
             // Safely access the NameIdentifier claim
@@ -34,12 +35,18 @@ namespace FinancialLiteracyTool.Pages.AdminPages.AdminAssessment
             }
             /*--------------------ADMIN PRIV----------------------*/
 
+            if (!IsAdmin)
+            {
+                return Forbid();
+            }
 
             PopulateAssessmentAreaList();
 
             SelectedAssessmentAreaID = areaId;
 
             PopulateQuestionAreaList(areaId);
+
+            return Page();
         }//End of 'OnGet'.
 
         public IActionResult OnPost()

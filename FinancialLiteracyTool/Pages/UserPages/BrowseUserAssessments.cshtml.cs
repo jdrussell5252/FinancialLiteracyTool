@@ -55,13 +55,14 @@ namespace FinancialLiteracyTool.Pages.UserPages
             {
                 // include description for display on browse page
                 string query = @"
-    SELECT a.AssessmentName, a.AssessmentDescription
-    FROM UserAssessments AS ua
-    INNER JOIN Assessment AS a 
-        ON a.AssessmentID = ua.AssessmentID
-    WHERE ua.SystemUserID = @SystemUserID";
+                    SELECT a.AssessmentName, a.AssessmentDescription
+                    FROM UserAssessments AS ua
+                    INNER JOIN Assessment AS a 
+                        ON a.AssessmentID = ua.AssessmentID
+                    WHERE ua.SystemUserID = @SystemUserID AND ua.IsFinished = @IsFinished";
                 SqlCommand cmd = new SqlCommand(query, conn);
                 cmd.Parameters.AddWithValue("@SystemUserID", id);
+                cmd.Parameters.AddWithValue("@IsFinished", false);
                 conn.Open();
                 SqlDataReader reader = cmd.ExecuteReader();
                 if (reader.HasRows)

@@ -56,11 +56,12 @@ namespace FinancialLiteracyTool.Pages.CoachPages
 
 
                     conn.Open();
-                    string insertcmdText = "INSERT INTO UserAssessments (AssessmentID, SystemUserID, CoachID) VALUES (@AssessmentID, @SystemUserID, @CoachID);";
+                    string insertcmdText = "INSERT INTO UserAssessments (AssessmentID, SystemUserID, CoachID, IsFinished) VALUES (@AssessmentID, @SystemUserID, @CoachID, @IsFinished);";
                     SqlCommand insertcmd = new SqlCommand(insertcmdText, conn);
                     insertcmd.Parameters.AddWithValue("@AssessmentID", SelectedAssessmentID);
                     insertcmd.Parameters.AddWithValue("@SystemUserID", SelectedUserID);
                     insertcmd.Parameters.AddWithValue("@CoachID", userId);
+                    insertcmd.Parameters.AddWithValue("@IsFinished", false);
                     insertcmd.ExecuteScalar();
                 }
 

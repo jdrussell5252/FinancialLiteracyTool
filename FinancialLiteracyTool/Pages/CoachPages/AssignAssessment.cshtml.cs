@@ -1,10 +1,12 @@
 using FinancialLiteracyTool.MyAppHelper;
+using FinancialLiteracyTool.Model.Assessments;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Data.SqlClient;
 using System.Security.Claims;
+using FinancialLiteracyTool.Model.Users;
 
 namespace FinancialLiteracyTool.Pages.CoachPages
 {

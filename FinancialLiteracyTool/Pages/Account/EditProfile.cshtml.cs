@@ -10,6 +10,7 @@ using System.Security.Claims;
 namespace FinancialLiteracyTool.Pages.Account
 {
     [Authorize]
+    [BindProperties]
     public class EditProfileModel : PageModel
     {
         public bool IsAdmin { get; set; }
@@ -27,7 +28,7 @@ namespace FinancialLiteracyTool.Pages.Account
             /*--------------------ADMIN PRIV----------------------*/
 
             PopulateUsername(id);
-            string str = Profiles.SystemUserName;
+            // string str = Profiles.SystemUserName;
         }// End of 'OnGet'.
 
         public IActionResult OnPost(int id)

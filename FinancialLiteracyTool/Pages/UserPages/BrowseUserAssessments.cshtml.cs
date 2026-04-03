@@ -55,7 +55,7 @@ namespace FinancialLiteracyTool.Pages.UserPages
             {
                 // include description for display on browse page
                 string query = @"
-                    SELECT a.AssessmentName, a.AssessmentDescription
+                    SELECT a.AssessmentID, a.AssessmentName, a.AssessmentDescription
                     FROM UserAssessments AS ua
                     INNER JOIN Assessment AS a 
                         ON a.AssessmentID = ua.AssessmentID
@@ -71,8 +71,9 @@ namespace FinancialLiteracyTool.Pages.UserPages
                     {
                         BrowseUserAssessment aAssessment = new BrowseUserAssessment
                         {
-                            AssessmentName = reader.GetString(0),
-                            AssessmentDescription = reader.GetString(1)
+                            AssessmentID = reader.GetInt32(0),
+                            AssessmentName = reader.GetString(1),
+                            AssessmentDescription = reader.GetString(2)
                         };
                         Assessments.Add(aAssessment);
 

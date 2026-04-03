@@ -51,6 +51,7 @@ namespace FinancialLiteracyTool.Pages.AdminPages.AdminAssessment
 
         public IActionResult OnPost()
         {
+            PopulateSelectedQuestionIDs();
             if (ModelState.IsValid)
             {
                 using (SqlConnection conn = new SqlConnection(AppHelper.GetDBConnectionString()))
@@ -161,6 +162,11 @@ namespace FinancialLiteracyTool.Pages.AdminPages.AdminAssessment
                 }
             }
         }//End of 'PopulateAssessmentAreaList'.
+
+        private void PopulateSelectedQuestionIDs()
+        {
+
+        }
 
         /*--------------------ADMIN PRIV----------------------*/
         private void CheckIfUserIsAdmin(int userId)

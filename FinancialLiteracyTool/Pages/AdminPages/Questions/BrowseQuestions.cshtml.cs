@@ -14,11 +14,11 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Questions
         public List<Question> Questions { get; set; } = new();
         public bool IsAdmin { get; set; }
         public int PageNumber { get; set; } = 1;
-        public int PageSize { get; set; } = 5;
+        public int PageSize { get; set; } = 6;
         public int TotalCount { get; set; }
         public int TotalPages => Math.Max(1, (int)Math.Ceiling((double)TotalCount / Math.Max(1, PageSize)));
 
-        public IActionResult OnGet(int id, int pageNumber = 1, int pageSize = 5)
+        public IActionResult OnGet(int id, int pageNumber = 1, int pageSize = 6)
         {
 
             // Safely access the NameIdentifier claim
@@ -40,7 +40,7 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Questions
 
             // === Pagination logic ===
             PageNumber = pageNumber < 1 ? 1 : pageNumber;
-            PageSize = pageSize < 1 ? 5 : pageSize;
+            PageSize = pageSize < 1 ? 6 : pageSize;
 
             TotalCount = Questions.Count;
 

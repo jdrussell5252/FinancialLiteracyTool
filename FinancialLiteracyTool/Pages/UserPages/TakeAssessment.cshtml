@@ -12,6 +12,7 @@
 
 <div class="exam-container">
     <div id="questionContainer">
+        <!--not sure what the Take(30) does here, doesn't seem to do anything if removed-->
         @foreach (var q in Model.Questions.Take(30))
         {
             <div class="question mb-4">
@@ -51,6 +52,7 @@
        style="display:none;">
         Finish Assessment
     </a>
+
 </div>
 
 <script>
@@ -154,7 +156,7 @@
         });
 
         if (res.ok) {
-            window.location.href = "@Url.Page("/Assessment/ConfirmSubmission")";
+            window.location.href = "@Url.Page("/Assessment/ConfirmSubmission")?id=@Model.NumQuestions";
         } else {
             alert("Could not save answers. Please try again.");
         }

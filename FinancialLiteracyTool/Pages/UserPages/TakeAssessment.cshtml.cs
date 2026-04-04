@@ -14,11 +14,9 @@ namespace FinancialLiteracyTool.Pages.UserPages
         public bool IsAdmin { get; set; }
         public List<Question> Questions { get; set; } = new();
         public List<QuestionChoices> Choices { get; set; } = new();
-        public MyAssessment ThisAssessment { get; set; } = new();
-
+        public int NumQuestions { get; set; }
         public void OnGet(int id)
         {
-
             // Safely access the NameIdentifier claim
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
             /*--------------------ADMIN PRIV----------------------*/
@@ -31,8 +29,7 @@ namespace FinancialLiteracyTool.Pages.UserPages
 
             PopulateAssessmentQuestions(id);
             PopulateAssessmentChoices(id);
-            //PopulateQuestions();
-            //PopulateQuestionChoices();
+            NumQuestions = Questions.Count;
         }//End of 'OnGet'.
 
         private void PopulateAssessmentQuestions(int id)
@@ -89,52 +86,6 @@ namespace FinancialLiteracyTool.Pages.UserPages
                 }
             }
         }
-        /*
-         * Questions should be sorted by area.
-         */
-        private void PopulateQuestions()
-        {
-            using (SqlConnection conn = new SqlConnection(AppHelper.GetDBConnectionString()))
-            {
-                string query = "SELECT QuestionID, QuestionText FROM Question";
-                SqlCommand cmd = new SqlCommand(query, conn);
-                conn.Open();
-                SqlDataReader reader = cmd.ExecuteReader();
-                if (reader.HasRows)
-                {
-                    while (reader.Read())
-                    {
-                        Questions.Add(new Question
-                        {
-                            QuestionID = reader.GetInt32(0),
-                            QuestionText = reader.GetString(1)
-                        });
-                    }
-                }
-            }
-        }//End of 'PopulateQuestions'.
-
-        private void PopulateQuestionChoices()
-        {
-            using (SqlConnection conn = new SqlConnection(AppHelper.GetDBConnectionString()))
-            {
-                string query = "SELECT q.QuestionID, qc.QuestionChoiceText FROM Question AS q JOIN QuestionChoices AS qc ON q.QuestionID = qc.QuestionID";
-                SqlCommand cmd = new SqlCommand(query, conn);
-                conn.Open();
-                SqlDataReader reader = cmd.ExecuteReader();
-                if (reader.HasRows)
-                {
-                    while (reader.Read())
-                    {
-                        Choices.Add(new QuestionChoices
-                        {
-                            QuestionID = reader.GetInt32(0),
-                            QuestionChoiceText = reader.GetString(1)
-                        });
-                    }
-                }
-            }
-        }// End of 'PopulateQuestionChoices'.
 
         /*--------------------ADMIN PRIV----------------------*/
         private void CheckIfUserIsAdmin(int userId)

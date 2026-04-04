@@ -6,12 +6,13 @@ namespace FinancialLiteracyTool.Pages.Assessment
 {
     public class ConfirmSubmissionModel : PageModel
     {
-        public int TotalQuestions { get; private set; } = 30;
+        public int TotalQuestions { get; private set; }
         public int AnsweredCount { get; private set; }
         public bool AllAnswered => AnsweredCount >= TotalQuestions;
 
-        public IActionResult OnGet()
+        public IActionResult OnGet(int id)
         {
+            TotalQuestions = id;
             TempData.Keep("AnswersJson");
 
             var json = TempData["AnswersJson"] as string;

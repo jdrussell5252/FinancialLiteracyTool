@@ -17,9 +17,33 @@
     <!--<button class="btn btn-outline-light mt-2" onclick="toggleEdit()">Edit Profile</button>-->
     <a asp-page="/Account/EditProfile" asp-route-id="@Model.CurrentProfile.SystemUserID" class="btn btn-primary">Edit Profile</a>
 </section>
+<!-- Progress Windows -->
+<section class=" container text-center mt-5">
+    <h4 class="mb-4">My Progress</h4>
 
+    <div class=" row">
+
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5>Assessments Taken</h5>
+                    <h2 class="fw-bold display-5">@Model.AssesmentTaken</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5>Highest Score</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 <!-- Account Settings -->
 <section class="container text-center mt-5">
     <h4 class="text-dark">Account Settings</h4>
     <a asp-page="/Account/EditPassword" asp-route-id="@Model.CurrentProfile.SystemUserID" class="btn btn-primary">Change Password</a>
 </section>
+

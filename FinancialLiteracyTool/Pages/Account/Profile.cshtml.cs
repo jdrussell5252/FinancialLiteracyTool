@@ -14,6 +14,8 @@ namespace FinancialLiteracyTool.Pages.Account
         public bool IsAdmin { get; set; }
         public ProfileView CurrentProfile { get; set; } = new ProfileView();
 
+        public int AssesmentTaken { get; set; }
+
         public void OnGet()
         {
 
@@ -91,6 +93,19 @@ namespace FinancialLiteracyTool.Pages.Account
                 }
             }
         }//End of 'CheckIfUserIsAdmin'.
+
+        private void GetAssessmentsTaken(int userId)
+        {
+            using (SqlConnection conn = new SqlConnection(AppHelper.GetDBConnectionString()))
+            {
+                string cmdText = "SELECT COUNT(*) FROM UserAssessments WHERE SystemUserID = @SystemUserID";
+                SqlCommand cmd = new SqlCommand(cmdText, conn);
+                cmd.Parameters.AddWithValue("@SystemUserID", userId);
+                conn.Open();
+                var result = cmd.ExecuteScalar();
+                AssesmentTaken = Convert.ToInt32(result);
+            }
+        }
         /*--------------------ADMIN PRIV----------------------*/
     }// End of 'Profile' Class.
 }// End of 'namespace'.

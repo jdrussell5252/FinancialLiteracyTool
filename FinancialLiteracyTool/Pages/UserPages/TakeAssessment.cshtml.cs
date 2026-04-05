@@ -15,6 +15,8 @@ namespace FinancialLiteracyTool.Pages.UserPages
         public List<Question> Questions { get; set; } = new();
         public List<QuestionChoices> Choices { get; set; } = new();
         public int NumQuestions { get; set; }
+        public List<QuestionChoices> UserAnswers { get; set; } = new();
+        public QuestionChoices temp { get; set; } = new();
         public void OnGet(int id)
         {
             // Safely access the NameIdentifier claim
@@ -63,7 +65,7 @@ namespace FinancialLiteracyTool.Pages.UserPages
         {
             using (SqlConnection conn = new SqlConnection(AppHelper.GetDBConnectionString()))
             {
-                string query = "SELECT q.QuestionID, qc.QuestionChoiceText, aq.AssessmentID " +
+                string query = "SELECT q.QuestionID, qc.ChoiceID, qc.QuestionChoiceText, aq.AssessmentID " +
                                 "FROM Question AS q JOIN QuestionChoices AS qc " +
                                 "ON q.QuestionID = qc.QuestionID " +
                                 "JOIN AssessmentQuestion AS aq " +
@@ -80,7 +82,8 @@ namespace FinancialLiteracyTool.Pages.UserPages
                         Choices.Add(new QuestionChoices
                         {
                             QuestionID = reader.GetInt32(0),
-                            QuestionChoiceText = reader.GetString(1)
+                            QuestionChoiceID = reader.GetInt32(1),
+                            QuestionChoiceText = reader.GetString(2)
                         });
                     }
                 }

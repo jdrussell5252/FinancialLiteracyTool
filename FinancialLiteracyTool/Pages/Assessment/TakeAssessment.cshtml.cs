@@ -9,6 +9,8 @@ using System.Text.Json;
 
 namespace FinancialLiteracyTool.Pages.Assessment
 {
+    // This is the old take assessment page atm, the functional one is in /UserPages/TakeAssessment
+    // Will ask later about how this should be organized
     public class TakeAssessmentModel : PageModel
     {
         public bool IsAdmin { get; set; }

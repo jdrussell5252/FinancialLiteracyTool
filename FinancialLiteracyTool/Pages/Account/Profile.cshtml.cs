@@ -14,7 +14,7 @@ namespace FinancialLiteracyTool.Pages.Account
         public bool IsAdmin { get; set; }
         public ProfileView CurrentProfile { get; set; } = new ProfileView();
 
-        public int AssesmentTaken { get; set; }
+        public int AssessmentsTaken { get; set; }
 
         public void OnGet()
         {
@@ -103,7 +103,7 @@ namespace FinancialLiteracyTool.Pages.Account
                 cmd.Parameters.AddWithValue("@SystemUserID", userId);
                 conn.Open();
                 var result = cmd.ExecuteScalar();
-                AssesmentTaken = Convert.ToInt32(result);
+                AssessmentsTaken = Convert.ToInt32(result);
             }
         }
         /*--------------------ADMIN PRIV----------------------*/

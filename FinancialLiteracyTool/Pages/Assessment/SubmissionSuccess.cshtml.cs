@@ -14,7 +14,7 @@ namespace FinancialLiteracyTool.Pages.Assessment
     public class SubmissionSuccessModel : PageModel
     {
         // Reads from the Json and stores user answers as dictionary
-        // Key = QuestionChoiceID, value = QuestionChoiceText
+        // Key = QuestionID, value = ChoiceID
         Dictionary<string, string> Answers { get; set; } = new Dictionary<string, string>();
         public List<int> AnswerIDs { get; set; } = new List<int>();
         public int CorrectAnswers { get; set; }

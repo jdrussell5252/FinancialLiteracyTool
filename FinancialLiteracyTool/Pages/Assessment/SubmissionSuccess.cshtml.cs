@@ -19,6 +19,7 @@ namespace FinancialLiteracyTool.Pages.Assessment
         public List<int> AnswerIDs { get; set; } = new List<int>();
         public int CorrectAnswers { get; set; }
         public float Score { get; set; }
+
         public void OnGet()
         {
             TempData.Keep("AnswersJson");
@@ -30,7 +31,7 @@ namespace FinancialLiteracyTool.Pages.Assessment
             string IDs = IDsToString(Answers);
             CountCorrectAnswers(IDs);
             Score = (float)Math.Round(((float)CorrectAnswers / Answers.Count) * 100, 2);
-        }
+        }// End of ''.
 
         private void CountCorrectAnswers(string IDs)
         {
@@ -53,7 +54,7 @@ namespace FinancialLiteracyTool.Pages.Assessment
                     }
                 }
             }
-        }
+        }// End of ''.
 
         private string IDsToString(Dictionary<string, string> dict)
         {
@@ -73,6 +74,6 @@ namespace FinancialLiteracyTool.Pages.Assessment
             string result = sb.ToString();
 
             return result;
-        }
-    }
-}
+        }// End of 'IDsToString'.
+    }// End of ''.
+}// End of ''.

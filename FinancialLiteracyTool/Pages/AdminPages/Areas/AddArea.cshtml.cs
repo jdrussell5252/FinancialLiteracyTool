@@ -1,4 +1,6 @@
+using FinancialLiteracyTool.Model.Areas;
 using FinancialLiteracyTool.MyAppHelper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Data.SqlClient;
@@ -6,9 +8,11 @@ using System.Security.Claims;
 
 namespace FinancialLiteracyTool.Pages.AdminPages.Areas
 {
+    [Authorize]
     public class AddAreaModel : PageModel
     {
         public bool IsAdmin { get; set; }
+        public MyAreas NewArea { get; set; } = new MyAreas();
         public IActionResult OnGet()
         {
             // Safely access the NameIdentifier claim
@@ -28,6 +32,25 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Areas
 
             return Page();
         }// End of 'OnGet'.
+
+        public IActionResult OnPost()
+        {
+            if (ModelState.IsValid)
+            {
+                using (SqlConnection conn = new SqlConnection(AppHelper.GetDBConnectionString()))
+                {
+
+                    conn.Open();
+                    string insertcmdText = "INSERT INTO Area (AreaName) VALUES (@AreaName);";
+                    SqlCommand insertcmd = new SqlCommand(insertcmdText, conn);
+                    insertcmd.Parameters.AddWithValue("@AreaName", NewArea.AreaName);
+                    insertcmd.ExecuteScalar();
+
+                }
+                return RedirectToPage("BrowseAreas");
+            }
+            return Page();
+        }// End of 'OnPost'.
 
         /*--------------------ADMIN PRIV----------------------*/
         private void CheckIfUserIsAdmin(int userId)

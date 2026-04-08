@@ -1,4 +1,6 @@
+using FinancialLiteracyTool.Model.Areas;
 using FinancialLiteracyTool.MyAppHelper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Data.SqlClient;
@@ -6,10 +8,12 @@ using System.Security.Claims;
 
 namespace FinancialLiteracyTool.Pages.AdminPages.Areas
 {
+    [Authorize]
     public class EditAreaModel : PageModel
     {
         public bool IsAdmin { get; set; }
-        public IActionResult OnGet()
+        public AreaView Areas { get; set; } = new AreaView();
+        public IActionResult OnGet(int id)
         {
             // Safely access the NameIdentifier claim
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
@@ -26,8 +30,33 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Areas
                 return Forbid();
             }
 
+            PopulateAreaName(id);
+
             return Page();
         }// End of 'OnGet'.
+
+        private void PopulateAreaName(int id)
+        {
+            using (SqlConnection conn = new SqlConnection(AppHelper.GetDBConnectionString()))
+            {
+                string query = "SELECT AreaID, AreaName FROM Area WHERE AreaID = @AreaID";
+                SqlCommand cmd = new SqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("@AreaID", id);
+                conn.Open();
+                SqlDataReader reader = cmd.ExecuteReader();
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        Areas = new AreaView
+                        {
+                            AreaID = reader.GetInt32(0),
+                            AreaName = reader.GetString(1)
+                        };
+                    }
+                }
+            }
+        }//End of 'PopulateAreaName'.
 
         /*--------------------ADMIN PRIV----------------------*/
         private void CheckIfUserIsAdmin(int userId)

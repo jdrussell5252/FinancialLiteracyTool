@@ -8,3 +8,84 @@
         <label class="form-label fs-1" id="LabelText">Browse Areas</label>
     </div>
 </div>
+
+<!--===================Add Button==================-->
+<div class="row mb-3">
+    <div class="col-12">
+        <a asp-page="AddArea" class="btn btn-primary">
+            <i class="bi bi-plus-square"></i> Add Area
+        </a>
+    </div>
+</div>
+<!--===================End Add Button==================-->
+
+<div class="areas-container">
+    <div class="areas-card">
+        <h1 class="areas-title">Areas</h1>
+
+        <table class="areas-table">
+            <thead>
+                <tr>
+                    <th>Area Name</th>
+                    <th>ID</th>
+                    <th>Manage</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Areas != null && Model.Areas.Count > 0)
+                {
+                    @foreach (var area in Model.Areas)
+                    {
+                        <tr>
+                            <td>
+                                <div class="area-name">@area.AreaName</div>
+                            </td>
+                            <td>@area.AreaID</td>
+                            <td>
+                                <a asp-page="/AdminPages/Areas/EditArea"
+                                   asp-route-id="@area.AreaID"
+                                   class="action-btn">
+                                    Edit
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                }
+
+                else
+                {
+                    <tr>
+                        <td colspan="5" class="empty-message">No areas found.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    @if (Model.TotalCount > 0)
+    {
+        <div class="text-center my-4">
+
+            <div class="pagination justify-content-center">
+
+                @for (int i = 1; i <= Model.TotalPages; i++)
+                {
+                    if (i == Model.PageNumber)
+                    {
+                        <span class="page-number active">@i</span>
+                    }
+                    else
+                    {
+                        <a class="page-number"
+                           asp-page="./BrowseAreas"
+                           asp-route-pageNumber="@i"
+                           asp-route-pageSize="@Model.PageSize">
+                            @i
+                        </a>
+                    }
+                }
+
+            </div>
+
+        </div>
+    }
+</div>

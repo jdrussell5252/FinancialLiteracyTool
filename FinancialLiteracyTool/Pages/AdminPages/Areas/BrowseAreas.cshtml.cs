@@ -1,4 +1,7 @@
+using FinancialLiteracyTool.Model.Areas;
+using FinancialLiteracyTool.Model.Users;
 using FinancialLiteracyTool.MyAppHelper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Data.SqlClient;
@@ -6,10 +9,17 @@ using System.Security.Claims;
 
 namespace FinancialLiteracyTool.Pages.AdminPages.Areas
 {
+    [Authorize]
     public class BrowseAreasModel : PageModel
     {
+        public List<AreaView> Areas { get; set; } = new List<AreaView>();
         public bool IsAdmin { get; set; }
-        public IActionResult OnGet()
+        public int PageNumber { get; set; } = 1;
+        public int PageSize { get; set; } = 5;
+        public int TotalCount { get; set; }
+        public int TotalPages => Math.Max(1, (int)Math.Ceiling((double)TotalCount / Math.Max(1, PageSize)));
+
+        public IActionResult OnGet(int pageNumber = 1, int pageSize = 5)
         {
             // Safely access the NameIdentifier claim
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
@@ -26,8 +36,55 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Areas
                 return Forbid();
             }
 
+            PopulateAreas();
+
+            // === Pagination logic ===
+            PageNumber = pageNumber < 1 ? 1 : pageNumber;
+            PageSize = pageSize < 1 ? 5 : pageSize;
+
+            TotalCount = Areas.Count;
+
+            // Clamp PageNumber so it’s not past the last page
+            if (TotalCount > 0 && (PageNumber - 1) * PageSize >= TotalCount)
+            {
+                PageNumber = (int)Math.Ceiling((double)TotalCount / PageSize);
+            }
+
+            if (TotalCount > 0)
+            {
+                int skip = (PageNumber - 1) * PageSize;
+                Areas = Areas
+                    .Skip(skip)
+                    .Take(PageSize)
+                    .ToList();
+            }
+
             return Page();
         }// End of 'OnGet'.
+
+        private void PopulateAreas()
+        {
+            using (SqlConnection conn = new SqlConnection(AppHelper.GetDBConnectionString()))
+            {
+                string query = "SELECT AreaID, AreaName FROM Area";
+                SqlCommand cmd = new SqlCommand(query, conn);
+                conn.Open();
+                SqlDataReader reader = cmd.ExecuteReader();
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        AreaView Aarea = new AreaView
+                        {
+                            AreaID = reader.GetInt32(0),
+                            AreaName = reader.GetString(1)
+                        };
+                        Areas.Add(Aarea);
+
+                    }
+                }
+            }
+        }//End of 'PopulateUserList'.
 
         /*--------------------ADMIN PRIV----------------------*/
         private void CheckIfUserIsAdmin(int userId)

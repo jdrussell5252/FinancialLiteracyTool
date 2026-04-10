@@ -80,10 +80,10 @@
     document.querySelectorAll('input[type="radio"]').forEach(r => {
         r.addEventListener('change', () => {
             const qId = r.name.replace("q_", "");
-            const answers = JSON.parse(sessionStorage.getItem("answers") || "{}");
+            const answers = JSON.parse(localStorage.getItem("answers") || "{}");
 
             answers[qId] = r.value;
-            sessionStorage.setItem("answers", JSON.stringify(answers));
+            localStorage.setItem("answers", JSON.stringify(answers));
 
             // Highlight selected
             const parent = r.closest(".question");
@@ -99,7 +99,7 @@
     // RESTORE ANSWERS
     // =============================
     function restoreAnswers() {
-        const answers = JSON.parse(sessionStorage.getItem("answers") || "{}");
+        const answers = JSON.parse(localStorage.getItem("answers") || "{}");
 
         Object.keys(answers).forEach(qId => {
             const value = answers[qId];
@@ -144,7 +144,7 @@
     document.getElementById("finishBtn").addEventListener("click", async (e) => {
         e.preventDefault();
 
-        const answers = sessionStorage.getItem("answers") || "{}";
+        const answers = localStorage.getItem("answers") || "{}";
 
         const res = await fetch("@Url.Page("/Assessment/TakeAssessment", "SaveAnswers")", {
             method: "POST",

@@ -31,56 +31,67 @@
     @if (Model.Users.Count != 0)
     {
 
-        <div class="row">
+        <div class="card shadow-sm p-4">
+            <h3 class="mb-4">User</h3>
 
-            @foreach (var u in Model.Users)
-            {
-                <div class="col-md-6 col-lg-4 mb-4">
+            <table class="table align-middle">
 
-                    <div class="card shadow-sm h-100">
+                <thead class="text-muted">
+                    <tr>
+                        <th>Name</th>
+                        <th>Username</th>
+                        <th>Role</th>
+                        <th class="text-end">Manage</th>
+                    </tr>
+                </thead>
 
-                        <div class="card-body">
+                <tbody>
+                    @foreach (var u in Model.Users)
+                    {
+                        <tr>
+                            <td>
+                                <strong>@u.UserFName @u.UserLName</strong>
+                            </td>
 
-                            <!-- Name -->
-                            <h5 class="card-title mb-2">
-                                @u.UserFName @u.UserLName
-                            </h5>
+                            <td>
+                                @u.SystemUsername
+                            </td>
+                            
+                            <td>
+                                @(u.IsAdmin ? "Admin" : "User")
+                            </td>
 
-                            <!-- User ID -->
-                            <p class="text-muted">
-                                User ID: @u.UserID
-                            </p>
+                            <td class="text-end">
+                                <a asp-page="/AdminPages/Users/EditUsers"
+                                   asp-route-id="@u.UserID"
+                                   class="btn btn-primary btn-sm rounded-pill px-3">
+                                    Edit
+                                </a>
 
-                        </div>
+                                <form method="post"
+                                      asp-page-handler="Delete"
+                                      style="display:inline;">
 
-                        <div class="card-footer d-flex justify-content-between">
+                                    <input type="hidden"
+                                           name="id"
+                                           value="@u.UserID" />
 
-                            <!-- Edit -->
-                            <a asp-page="/AdminPages/Users/EditUsers"
-                               asp-route-id="@u.UserID"
-                               class="btn btn-sm btn-primary">
-                                <i class="bi bi-pencil-square"></i> Edit
-                            </a>
+                                    <button onclick="return confirm('Are you sure?')"
+                                            class="btn btn-danger btn-sm rounded-pill px-3 ms-2">
+                                        <i class="bi bi-trash3"></i>
+                                    </button>
 
-                            <!-- Delete -->
-                            <form method="post" asp-page-handler="Delete">
-                                <input type="hidden" name="id" value="@u.UserID" />
+                                </form>
 
-                                <button onclick="return confirm('Are you sure?')"
-                                        class="btn btn-sm delete-btn">
-                                    <i class="bi bi-trash3"></i>
-                                </button>
-                            </form>
+                            </td>
 
-                        </div>
+                        </tr>
+                    }
+                </tbody>
 
-                    </div>
-
-                </div>
-            }
+            </table>
 
         </div>
-
     }
     else
     {

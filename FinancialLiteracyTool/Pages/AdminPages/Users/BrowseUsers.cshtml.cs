@@ -16,6 +16,7 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Users
         public int PageNumber { get; set; } = 1;
         public int PageSize { get; set; } = 5;
         public int TotalCount { get; set; }
+        public int SystemUserRole { get; set; }
         public int TotalPages => Math.Max(1, (int)Math.Ceiling((double)TotalCount / Math.Max(1, PageSize)));
 
         public IActionResult OnGet(int pageNumber = 1, int pageSize = 5)
@@ -102,7 +103,8 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Users
                             UserFName = reader.GetString(1),
                             UserLName = reader.GetString(2),
                             SystemUsername = reader.GetString(3),
-                            SystemUserRole = reader.GetInt32(4)
+                            SystemUserRole = reader.GetInt32(4),
+                            IsAdmin = (reader.GetInt32(4) == 3)
                         };
                         Users.Add(Auser);
 

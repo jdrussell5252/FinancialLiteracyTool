@@ -8,5 +8,6 @@
         public int SystemUserRole { get; set; }
         public int UserID { get; set; }
         public int SystemUserID { get; set; }
+        public bool IsAdmin { get; set; }
     }// End of 'SystemUserView' Class.
 }// End of 'namespace'.

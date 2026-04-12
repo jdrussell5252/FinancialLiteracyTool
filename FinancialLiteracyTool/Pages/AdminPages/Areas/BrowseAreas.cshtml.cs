@@ -15,11 +15,11 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Areas
         public List<AreaView> Areas { get; set; } = new List<AreaView>();
         public bool IsAdmin { get; set; }
         public int PageNumber { get; set; } = 1;
-        public int PageSize { get; set; } = 5;
+        public int PageSize { get; set; } = 10;
         public int TotalCount { get; set; }
         public int TotalPages => Math.Max(1, (int)Math.Ceiling((double)TotalCount / Math.Max(1, PageSize)));
 
-        public IActionResult OnGet(int pageNumber = 1, int pageSize = 5)
+        public IActionResult OnGet(int pageNumber = 1, int pageSize = 10)
         {
             // Safely access the NameIdentifier claim
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
@@ -40,7 +40,7 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Areas
 
             // === Pagination logic ===
             PageNumber = pageNumber < 1 ? 1 : pageNumber;
-            PageSize = pageSize < 1 ? 5 : pageSize;
+            PageSize = pageSize < 1 ? 10 : pageSize;
 
             TotalCount = Areas.Count;
 

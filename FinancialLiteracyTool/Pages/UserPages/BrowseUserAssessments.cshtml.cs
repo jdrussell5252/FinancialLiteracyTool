@@ -16,6 +16,13 @@ namespace FinancialLiteracyTool.Pages.UserPages
         public int PageSize { get; set; } = 5;
         public int TotalCount { get; set; }
         public int TotalPages => Math.Max(1, (int)Math.Ceiling((double)TotalCount / Math.Max(1, PageSize)));
+        public int AssessmentID { get; set; }
+        public string? AssessmentName { get; set; }
+        public string? AssessmentDescription { get; set; }
+        public string? Status { get; set; } 
+        public int ProgressPercent { get; set; }
+
+
         public void OnGet(int pageNumber = 1, int pageSize = 5)
         {
             // Safely access the NameIdentifier claim
@@ -49,35 +56,51 @@ namespace FinancialLiteracyTool.Pages.UserPages
             }
         }//End of ''.
 
-        private void PopulateAssessments(int id)
+        private void PopulateAssessments(int userId)
         {
             using (SqlConnection conn = new SqlConnection(AppHelper.GetDBConnectionString()))
             {
-                // include description for display on browse page
                 string query = @"
-                    SELECT a.AssessmentID, a.AssessmentName, a.AssessmentDescription
-                    FROM UserAssessments AS ua
-                    INNER JOIN Assessment AS a 
-                        ON a.AssessmentID = ua.AssessmentID
-                    WHERE ua.SystemUserID = @SystemUserID AND ua.IsFinished = @IsFinished";
+                   SELECT 
+                       a.AssessmentID,
+                       a.AssessmentName,
+                       a.AssessmentDescription,
+                       ua.IsFinished,
+                       ua.CurrentQuestionIndex,
+                       (SELECT COUNT(*) FROM AssessmentQuestion aq WHERE aq.AssessmentID = a.AssessmentID) AS TotalQuestions
+                   FROM Assessment AS a
+                   LEFT JOIN UserAssessment AS ua 
+                       ON ua.AssessmentID = a.AssessmentID 
+                       AND ua.SystemUserID = @SystemUserID
+                   ORDER BY a.AssessmentID";
+
                 SqlCommand cmd = new SqlCommand(query, conn);
-                cmd.Parameters.AddWithValue("@SystemUserID", id);
-                cmd.Parameters.AddWithValue("@IsFinished", false);
+                cmd.Parameters.AddWithValue("@SystemUserID", userId);
                 conn.Open();
                 SqlDataReader reader = cmd.ExecuteReader();
-                if (reader.HasRows)
-                {
-                    while (reader.Read())
-                    {
-                        BrowseUserAssessment aAssessment = new BrowseUserAssessment
-                        {
-                            AssessmentID = reader.GetInt32(0),
-                            AssessmentName = reader.GetString(1),
-                            AssessmentDescription = reader.GetString(2)
-                        };
-                        Assessments.Add(aAssessment);
 
-                    }
+                while (reader.Read())
+                {
+                    bool? isFinished = reader.IsDBNull(3) ? null : (bool?)reader.GetBoolean(3);
+                    int currentIndex = reader.IsDBNull(4) ? 0 : int.Parse(reader.GetString(4));
+                    int totalQuestions = reader.IsDBNull(5) ? 1 : reader.GetInt32(5);
+
+                    string status = isFinished == null ? "NotStarted"
+                                  : isFinished == true ? "Completed"
+                                  : "InProgress";
+
+                    int progress = status == "NotStarted" ? 0
+                                 : status == "Completed" ? 100
+                                 : (int)Math.Round((double)currentIndex / totalQuestions * 100);
+
+                    Assessments.Add(new BrowseUserAssessment
+                    {
+                        AssessmentID = reader.GetInt32(0),
+                        AssessmentName = reader.GetString(1),
+                        AssessmentDescription = reader.IsDBNull(2) ? "" : reader.GetString(2),
+                        Status = status,
+                        ProgressPercent = progress
+                    });
                 }
             }
         }// End of 'PopulateAssessments'.

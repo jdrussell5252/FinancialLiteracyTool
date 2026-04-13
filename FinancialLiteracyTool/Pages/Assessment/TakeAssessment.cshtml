@@ -60,6 +60,15 @@
     const total = questions.length;
 
     // =============================
+    // SERVER DATA
+    // =============================
+      const serverData = {
+        userAssessmentID: @Model.UserAssessmentID,
+        currentQuestionIndex: @Model.CurrentQuestionIndex,
+        savedAnswers: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.SavedAnswers))
+    };
+
+    // =============================
     // SHOW QUESTION
     // =============================
     function showQuestion(index) {
@@ -74,22 +83,35 @@
     }
 
     // =============================
-    // SAVE ANSWERS
+    // SAVE ANSWERS (radio change)
     // =============================
     document.querySelectorAll('input[type="radio"]').forEach(r => {
         r.addEventListener('change', () => {
             const qId = r.name.replace("q_", "");
-            const answers = JSON.parse(sessionStorage.getItem("answers") || "{}");
 
+            // Save to sessionStorage for speed
+            const answers = JSON.parse(sessionStorage.getItem("answers") || "{}");
             answers[qId] = r.value;
             sessionStorage.setItem("answers", JSON.stringify(answers));
 
-            // Highlight selected
-            const parent = r.closest(".question");
-            parent.querySelectorAll(".choice-option").forEach(opt => {
-                opt.classList.remove("selected");
+            // Auto-save to DB
+            fetch('@Url.Page("/UserPages/TakeAssessment", "SaveSingleAnswer")', {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "RequestVerificationToken": document.querySelector('input[name="__RequestVerificationToken"]')?.value
+                },
+                body: JSON.stringify({
+                    userAssessmentID: serverData.userAssessmentID,
+                    questionID: parseInt(qId),
+                    selectedAnswer: r.value,
+                    currentQuestionIndex: currentQuestion
+                })
             });
 
+            // Highlight selected
+            const parent = r.closest(".question");
+            parent.querySelectorAll(".choice-option").forEach(opt => opt.classList.remove("selected"));
             r.parentElement.classList.add("selected");
         });
     });
@@ -98,11 +120,13 @@
     // RESTORE ANSWERS
     // =============================
     function restoreAnswers() {
-        const answers = JSON.parse(sessionStorage.getItem("answers") || "{}");
+        // Server is source of truth, fall back to sessionStorage
+        const answers = Object.keys(serverData.savedAnswers).length > 0
+            ? serverData.savedAnswers
+            : JSON.parse(sessionStorage.getItem("answers") || "{}");
 
         Object.keys(answers).forEach(qId => {
             const value = answers[qId];
-
             const radios = document.querySelectorAll(`input[name="q_${qId}"]`);
             radios.forEach(r => {
                 if (r.value === value) {
@@ -114,7 +138,7 @@
     }
 
     // =============================
-    // NEXT BUTTON (validation added)
+    // NEXT BUTTON
     // =============================
     document.getElementById("nextBtn").addEventListener("click", () => {
         const radios = questions[currentQuestion].querySelectorAll('input[type="radio"]');
@@ -138,24 +162,28 @@
     });
 
     // =============================
-    // SUBMIT TO BACKEND
+    // FINISH BUTTON
     // =============================
     document.getElementById("finishBtn").addEventListener("click", async (e) => {
         e.preventDefault();
 
-        const answers = sessionStorage.getItem("answers") || "{}";
+        const answers = JSON.parse(sessionStorage.getItem("answers") || "{}");
 
-        const res = await fetch("@Url.Page("/Assessment/TakeAssessment", "SaveAnswers")", {
+        const res = await fetch('@Url.Page("/UserPages/TakeAssessment", "SaveAnswers")', {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 "RequestVerificationToken": document.querySelector('input[name="__RequestVerificationToken"]')?.value
             },
-            body: answers
+            body: JSON.stringify({
+                userAssessmentID: serverData.userAssessmentID,
+                answers: answers
+            })
         });
 
         if (res.ok) {
-            window.location.href = "@Url.Page("/Assessment/ConfirmSubmission")";
+            sessionStorage.removeItem("answers");
+            window.location.href = "@Url.Page("/UserPages/ViewResults")";
         } else {
             alert("Could not save answers. Please try again.");
         }
@@ -165,8 +193,13 @@
     // INIT
     // =============================
     restoreAnswers();
-    showQuestion(0);
+    currentQuestion = serverData.currentQuestionIndex;
+    showQuestion(currentQuestion);
 </script>
+
+<form method="post" style="display:none;">
+    @Html.AntiForgeryToken()
+</form>
 
 <form method="post" style="display:none;">
     @Html.AntiForgeryToken()

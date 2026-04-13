@@ -3,55 +3,171 @@
 @{
 }
 
-<div class="row text-center mb-4">
-    <div class="col-12">
-        <h1>Browse Assessments</h1>
+<style>
+    body {
+        background-color: #f5f7fb;
+    }
+
+    .card {
+        border: none;
+        border-radius: 16px;
+        transition: all 0.3s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+
+    .card-title {
+        font-weight: 600;
+        font-size: 1.2rem;
+    }
+
+    .card-text {
+        min-height: 50px;
+    }
+
+    .btn-primary {
+        border-radius: 10px;
+        font-weight: 500;
+    }
+
+    .card-footer {
+        background: transparent;
+        border-top: none;
+    }
+
+    .page-number {
+        margin: 0 5px;
+        padding: 8px 14px;
+        border-radius: 8px;
+        text-decoration: none;
+        background-color: #e9ecef;
+        color: #333;
+        transition: 0.2s;
+    }
+
+    .page-number:hover {
+        background-color: #0d6efd;
+        color: white;
+    }
+
+    .page-number.active {
+        background-color: #0d6efd;
+        color: white;
+        font-weight: bold;
+    }
+
+    .header-title {
+        font-weight: 700;
+        font-size: 2.2rem;
+    }
+
+    .subtitle {
+        color: #6c757d;
+    }
+</style>
+
+<div class="container py-4">
+
+    <!-- Header -->
+    <div class="text-center mb-5">
+        <h1 class="header-title">Browse Assessments</h1>
+        <p class="subtitle">Choose an assessment to get started</p>
     </div>
-</div>
 
-<div class="container mt-4">
-
+    <!-- Error Message -->
     @if (TempData["ErrorMessage"] != null)
     {
-        <div class="alert alert-danger">
+        <div class="alert alert-danger text-center">
             @TempData["ErrorMessage"]
         </div>
     }
 
+    <!-- Assessments -->
     @if (Model.Assessments.Count != 0)
     {
-
-        <div class="row">
+        <div class="row g-4">
 
             @foreach (var LocalAssessment in Model.Assessments)
             {
-                <div class="col-md-6 col-lg-4 col-xl-3 mb-4">
+                <div class="col-md-6 col-lg-4 col-xl-3">
 
-                    <div class="card shadow-sm h-100">
+                    <div class="card-body d-flex flex-column text-center">
 
-                        <div class="card-body text-center">
+                        <h5 class="card-title">
+                            @LocalAssessment.AssessmentName
+                        </h5>
 
-                            <h5 class="card-title">
-                                @LocalAssessment.AssessmentName
-                            </h5>
+                        @if (!string.IsNullOrWhiteSpace(LocalAssessment.AssessmentDescription))
+                        {
+                            <p class="card-text text-muted small mt-2">
+                                @LocalAssessment.AssessmentDescription
+                            </p>
+                        }
 
-                            @if (!string.IsNullOrWhiteSpace(LocalAssessment.AssessmentDescription))
+                        <!-- Status Badge -->
+                        <div class="mb-2">
+                            @if (LocalAssessment.Status == "Completed")
                             {
-                                <p class="card-text text-muted small">
-                                    @LocalAssessment.AssessmentDescription
-                                </p>
+                                <span class="badge bg-success">Completed</span>
                             }
-
+                            else if (LocalAssessment.Status == "InProgress")
+                            {
+                                <span class="badge bg-warning text-dark">In Progress</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">Not Started</span>
+                            }
                         </div>
-                        <div class="card-footer">
 
-                            <a asp-page="/UserPages/TakeAssessment"
-                               asp-route-id="@LocalAssessment.AssessmentID"
-                               class="btn btn-primary w-100 text-center">
-                                <i class="bi bi-pencil-square"></i> Take Assessment
-                            </a>
-
+                        <!-- Progress Bar -->
+                        <div class="progress mb-3" style="height: 10px; border-radius: 8px;">
+                            <div class="progress-bar
+                                @(LocalAssessment.Status == "Completed" ? "bg-success" :
+                                               LocalAssessment.Status == "InProgress" ? "bg-warning" : "bg-secondary")"
+                                 role="progressbar"
+                                 style="width: @LocalAssessment.ProgressPercent%"
+                                 aria-valuenow="@LocalAssessment.ProgressPercent"
+                                 aria-valuemin="0"
+                                 aria-valuemax="100">
+                            </div>
                         </div>
+                        <small class="text-muted mb-3">@LocalAssessment.ProgressPercent% complete</small>
+
+                        <!-- Action Button -->
+                        <div class="mt-auto pt-3">
+                            @if (LocalAssessment.Status == "Completed")
+                            {
+                                <a asp-page="/UserPages/ViewResults"
+                                       asp-route-id="@LocalAssessment.AssessmentID"
+                                       class="btn btn-success w-100">
+                                    <i class="bi bi-bar-chart-line me-2"></i>
+                                    View Results
+                                </a>
+                            }
+                            else if (LocalAssessment.Status == "InProgress")
+                            {
+                                <a asp-page="/UserPages/TakeAssessment"
+                                       asp-route-id="@LocalAssessment.AssessmentID"
+                                       class="btn btn-warning w-100 text-dark">
+                                    <i class="bi bi-play-circle me-2"></i>
+                                    Continue Assessment
+                                </a>
+                            }
+                            else
+                            {
+                                <a asp-page="/UserPages/TakeAssessment"
+                                       asp-route-id="@LocalAssessment.AssessmentID"
+                                       class="btn btn-primary w-100">
+                                    <i class="bi bi-pencil-square me-2"></i>
+                                    Start Assessment
+                                </a>
+                            }
+                        </div>
+
                     </div>
 
                 </div>
@@ -59,39 +175,36 @@
 
         </div>
 
-        @if (Model.TotalCount > 0)
+        <!-- Pagination -->
+        @if (Model.TotalPages > 1)
         {
-            <div class="text-center my-4">
+            <div class="text-center mt-5">
 
-                <div class="pagination justify-content-center">
-
-                    @for (int i = 1; i <= Model.TotalPages; i++)
+                @for (int i = 1; i <= Model.TotalPages; i++)
+                {
+                    if (i == Model.PageNumber)
                     {
-                        if (i == Model.PageNumber)
-                        {
-                            <span class="page-number active">@i</span>
-                        }
-                        else
-                        {
-                            <a class="page-number"
+                        <span class="page-number active">@i</span>
+                    }
+                    else
+                    {
+                        <a class="page-number"
                                asp-page="./BrowseUserAssessments"
                                asp-route-pageNumber="@i"
                                asp-route-pageSize="@Model.PageSize">
-                                @i
-                            </a>
-                        }
+                            @i
+                        </a>
                     }
-
-                </div>
+                }
 
             </div>
         }
-
     }
     else
     {
-        <div class="text-center my-4">
-            <h4>No Assessments yet.</h4>
+        <div class="text-center mt-5">
+            <h4>No Assessments Available</h4>
+            <p class="text-muted">Check back later or contact your administrator.</p>
         </div>
     }
 

@@ -10,10 +10,12 @@ namespace FinancialLiteracyTool.Pages.Assessment
         public int TotalQuestions { get; private set; }
         public int AnsweredCount { get; private set; }
         public bool AllAnswered => AnsweredCount >= TotalQuestions;
+        public int CurrAssessmentID { get; set; }
 
-        public IActionResult OnGet(int id)
+        public IActionResult OnGet(int id, int NumQuestions)
         {
-            TotalQuestions = id;
+            CurrAssessmentID = id;
+            TotalQuestions = NumQuestions;
             TempData.Keep("AnswersJson");
 
             var json = TempData["AnswersJson"] as string;
@@ -30,7 +32,7 @@ namespace FinancialLiteracyTool.Pages.Assessment
             return Page();
         }
 
-        public IActionResult OnPost()
+        public IActionResult OnPost(int id)
         {
             TempData.Keep("AnswersJson");
 
@@ -48,7 +50,7 @@ namespace FinancialLiteracyTool.Pages.Assessment
             }
 
             // TODO: Save + score here safely
-            return RedirectToPage("/Assessment/SubmissionSuccess");
+            return RedirectToPage("/Assessment/SubmissionSuccess", new { assessmentId = id });
         }
     }
 }

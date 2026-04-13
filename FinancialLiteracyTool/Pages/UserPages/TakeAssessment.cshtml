@@ -156,7 +156,7 @@
         });
 
         if (res.ok) {
-            window.location.href = "@Url.Page("/Assessment/ConfirmSubmission")?id=@Model.NumQuestions";
+            window.location.href = "@Url.Page("/Assessment/ConfirmSubmission")?id=@Model.CurrAssessmentID&NumQuestions=@Model.NumQuestions";
         } else {
             alert("Could not save answers. Please try again.");
         }

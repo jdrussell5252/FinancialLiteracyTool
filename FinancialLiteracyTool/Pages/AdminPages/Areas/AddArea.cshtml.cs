@@ -9,6 +9,7 @@ using System.Security.Claims;
 namespace FinancialLiteracyTool.Pages.AdminPages.Areas
 {
     [Authorize]
+    [BindProperties]
     public class AddAreaModel : PageModel
     {
         public bool IsAdmin { get; set; }

@@ -30,6 +30,7 @@
 
             <form method="post" class="mt-4">
                 <button type="submit"
+                        asp-route-id="@Model.CurrAssessmentID"
                         class="btn btn-danger me-2"
                         disabled="@(!Model.AllAnswered)">
                     Yes, Submit Assessment

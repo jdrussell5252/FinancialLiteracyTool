@@ -16,9 +16,10 @@ namespace FinancialLiteracyTool.Pages.UserPages
         public List<QuestionChoices> Choices { get; set; } = new();
         public int NumQuestions { get; set; }
         public List<QuestionChoices> UserAnswers { get; set; } = new();
-        public QuestionChoices temp { get; set; } = new();
+        public int CurrAssessmentID { get; set; }
         public void OnGet(int id)
         {
+            CurrAssessmentID = id;
             // Safely access the NameIdentifier claim
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
             /*--------------------ADMIN PRIV----------------------*/

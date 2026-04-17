@@ -5,6 +5,7 @@ using System.Text.Json;
 
 namespace FinancialLiteracyTool.Pages.Assessment
 {
+    //[Authorize]
     public class ConfirmSubmissionModel : PageModel
     {
         public int TotalQuestions { get; private set; }

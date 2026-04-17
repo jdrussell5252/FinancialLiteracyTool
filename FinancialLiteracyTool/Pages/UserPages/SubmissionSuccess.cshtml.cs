@@ -9,7 +9,7 @@ using System.Text;
 using System.Text.Json;
 using System.Xml.Serialization;
 
-namespace FinancialLiteracyTool.Pages.Assessment
+namespace FinancialLiteracyTool.Pages.UserPages
 {
     public class SubmissionSuccessModel : PageModel
     {
@@ -30,7 +30,7 @@ namespace FinancialLiteracyTool.Pages.Assessment
 
             string IDs = IDsToString(Answers);
             CountCorrectAnswers(IDs);
-            Score = (float)Math.Round(((float)CorrectAnswers / Answers.Count) * 100, 2);
+            Score = (float)Math.Round((float)CorrectAnswers / Answers.Count * 100, 2);
             SaveResults(assessmentId);
         }// End of ''.
 

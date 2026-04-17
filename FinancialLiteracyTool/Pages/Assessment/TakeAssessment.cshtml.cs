@@ -212,10 +212,10 @@ namespace FinancialLiteracyTool.Pages.Assessment
                 using (SqlConnection conn = new SqlConnection(AppHelper.GetDBConnectionString()))
                 {
                     string query = @"UPDATE UserAssessments 
-                             SET IsFinished = 1, LastSavedTime = @Now 
+                             SET IsFinished = 1
                              WHERE UserAssessmentID = @UAID";
                     SqlCommand cmd = new SqlCommand(query, conn);
-                    cmd.Parameters.AddWithValue("@Now", DateTime.Now);
+                    //cmd.Parameters.AddWithValue("@Now", DateTime.Now);
                     cmd.Parameters.AddWithValue("@UAID", /* pass UserAssessmentID from request */ 0);
                     conn.Open();
                     cmd.ExecuteNonQuery();

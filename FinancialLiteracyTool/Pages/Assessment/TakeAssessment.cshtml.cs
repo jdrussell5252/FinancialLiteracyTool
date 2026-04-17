@@ -101,7 +101,7 @@ namespace FinancialLiteracyTool.Pages.Assessment
             using (SqlConnection conn = new SqlConnection(AppHelper.GetDBConnectionString()))
             {
                 string query = @"SELECT UserAssessmentID, CurrentQuestionIndex 
-                         FROM UserAssessment 
+                         FROM UserAssessments 
                          WHERE SystemUserID = @UserID 
                          AND AssessmentID = @AssessmentID 
                          AND IsFinished = 0";
@@ -122,7 +122,7 @@ namespace FinancialLiteracyTool.Pages.Assessment
         {
             using (SqlConnection conn = new SqlConnection(AppHelper.GetDBConnectionString()))
             {
-                string query = @"INSERT INTO UserAssessment 
+                string query = @"INSERT INTO UserAssessments 
                             (AssessmentID, SystemUserID, CoachID, IsFinished, StartTime, LastSavedTime, CurrentQuestionIndex)
                          OUTPUT INSERTED.UserAssessmentID
                          VALUES (@AssessmentID, @UserID, 0, 0, @Now, @Now, '0')";
@@ -190,8 +190,8 @@ namespace FinancialLiteracyTool.Pages.Assessment
                 cmd.Parameters.AddWithValue("@Now", DateTime.Now);
                 cmd.ExecuteNonQuery();
 
-                // Update progress in UserAssessment
-                string update = @"UPDATE UserAssessment 
+                // Update progress in UserAssessments
+                string update = @"UPDATE UserAssessments 
                           SET CurrentQuestionIndex = @Index, LastSavedTime = @Now 
                           WHERE UserAssessmentID = @UAID";
                 SqlCommand cmd2 = new SqlCommand(update, conn);
@@ -211,7 +211,7 @@ namespace FinancialLiteracyTool.Pages.Assessment
                 // Mark assessment as finished
                 using (SqlConnection conn = new SqlConnection(AppHelper.GetDBConnectionString()))
                 {
-                    string query = @"UPDATE UserAssessment 
+                    string query = @"UPDATE UserAssessments 
                              SET IsFinished = 1, LastSavedTime = @Now 
                              WHERE UserAssessmentID = @UAID";
                     SqlCommand cmd = new SqlCommand(query, conn);

@@ -66,12 +66,14 @@ namespace FinancialLiteracyTool.Pages.UserPages
                        a.AssessmentName,
                        a.AssessmentDescription,
                        ua.IsFinished,
-                       ua.CurrentQuestionIndex,
+                       uaa.CurrentQuestionIndex,
                        (SELECT COUNT(*) FROM AssessmentQuestion aq WHERE aq.AssessmentID = a.AssessmentID) AS TotalQuestions
                    FROM Assessment AS a
-                   LEFT JOIN UserAssessment AS ua 
+                   LEFT JOIN UserAssessments AS ua 
                        ON ua.AssessmentID = a.AssessmentID 
                        AND ua.SystemUserID = @SystemUserID
+                   LEFT JOIN UserAssessmentAnswers AS uaa
+                       ON ua.UserAssessmentID = uaa.UserAssessmentID
                    ORDER BY a.AssessmentID";
 
                 SqlCommand cmd = new SqlCommand(query, conn);
@@ -79,6 +81,7 @@ namespace FinancialLiteracyTool.Pages.UserPages
                 conn.Open();
                 SqlDataReader reader = cmd.ExecuteReader();
 
+                // NEEDS FIXING, 
                 while (reader.Read())
                 {
                     bool? isFinished = reader.IsDBNull(3) ? null : (bool?)reader.GetBoolean(3);

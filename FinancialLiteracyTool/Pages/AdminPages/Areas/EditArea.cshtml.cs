@@ -9,6 +9,7 @@ using System.Security.Claims;
 namespace FinancialLiteracyTool.Pages.AdminPages.Areas
 {
     [Authorize]
+    [BindProperties]
     public class EditAreaModel : PageModel
     {
         public bool IsAdmin { get; set; }
@@ -34,6 +35,34 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Areas
 
             return Page();
         }// End of 'OnGet'.
+
+        public IActionResult OnPost(int id)
+        {
+            var areaName = (Areas.AreaName ?? string.Empty).Trim();
+            const int areaNameMax = 50;
+
+            if (areaName.Length > areaNameMax)
+            {
+                ModelState.AddModelError("Areas.AreaName", "Area Name must not exceed 50 characters.");
+            }
+
+            if (ModelState.IsValid)
+            {
+                using (SqlConnection conn = new SqlConnection(AppHelper.GetDBConnectionString()))
+                {
+
+                    conn.Open();
+                    string insertcmdText = "UPDATE Area SET AreaName = @AreaName WHERE AreaID = @AreaID;";
+                    SqlCommand insertcmd = new SqlCommand(insertcmdText, conn);
+                    insertcmd.Parameters.AddWithValue("@AreaName", Areas.AreaName);
+                    insertcmd.Parameters.AddWithValue("@AreaID", id);
+                    insertcmd.ExecuteScalar();
+
+                }
+                return RedirectToPage("BrowseAreas");
+            }
+            return Page();
+        }// End of 'OnPost'.
 
         private void PopulateAreaName(int id)
         {

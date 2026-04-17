@@ -36,6 +36,14 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Areas
 
         public IActionResult OnPost()
         {
+            var areaName = (NewArea.AreaName ?? string.Empty).Trim();
+            const int areaNameMax = 50;
+
+            if (areaName.Length > areaNameMax)
+            {
+                ModelState.AddModelError("NewArea.AreaName", "Area Name must not exceed 50 characters.");
+            }
+
             if (ModelState.IsValid)
             {
                 using (SqlConnection conn = new SqlConnection(AppHelper.GetDBConnectionString()))

@@ -21,21 +21,10 @@
 
         <div class="row mb-3">
             <!-- Assessment Name -->
-            <div class="col-md-6">
+            <div class="col-12">
                 <label asp-for="EditAssessment.AssessmentName" class="form-label fw-bold">Assessment Name</label>
                 <input asp-for="EditAssessment.AssessmentName" class="form-control" maxlength="100" />
                 <span asp-validation-for="EditAssessment.AssessmentName" class="text-danger"></span>
-            </div>
-
-            <!-- Assessment Area -->
-            <div class="col-md-6">
-                <label class="form-label fw-bold">Assessment Area</label>
-                <select asp-for="SelectedAssessmentAreaID"
-                        class="form-select"
-                        asp-items="Model.AssessmentArea"
-                        onchange="this.form.action='?handler=LoadQuestions'; this.form.submit();">
-                    <option value="">-- Select area --</option>
-                </select>
             </div>
         </div>
 
@@ -48,33 +37,86 @@
             </div>
         </div>
 
-        <!-- Questions -->
+        <!-- Areas multi-select: preselected areas (from existing questions) will be selected -->
         <div class="row mb-3">
             <div class="col-12">
-                <label class="form-label fw-bold">Questions</label>
-                <div class="list-group">
-                    @if (Model.QuestionOptions?.Any() ?? false)
+                <label class="form-label fw-bold">Areas to include when generating questions</label>
+
+                <div class="border rounded p-2" style="max-height:240px; overflow:auto;">
+                    @if (Model.AreaSelectList != null && Model.AreaSelectList.Any())
                     {
-                        foreach (var q in Model.QuestionOptions)
+                        foreach (var area in Model.AreaSelectList)
                         {
-                            <label class="list-group-item d-flex align-items-center">
-                                <input type="checkbox" name="SelectedQuestionIDs" value="@q.Value"
-                                       @(selectedIds.Contains(int.Parse(q.Value)) ? "checked" : "") />
-                                <span class="ms-2">@q.Text</span>
-                            </label>
+                            var value = area.Value;
+                            var id = $"area_{value}";
+                            var parsed = int.TryParse(value, out var intVal) ? intVal : (int?)null;
+                            var isChecked = Model.SelectedAreaIDs != null && parsed.HasValue && Model.SelectedAreaIDs.Contains(parsed.Value);
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="SelectedAreaIDs" id="@id" value="@value" @(isChecked ? "checked" : "") />
+                                <label class="form-check-label" for="@id">@area.Text</label>
+                            </div>
                         }
                     }
                     else
                     {
-                        <div class="text-muted p-2">No questions available for the selected area.</div>
+                        <div class="text-muted">No areas available.</div>
                     }
                 </div>
+
+                <small class="form-text text-muted d-block mt-2">Click checkboxes to select multiple areas. If none selected, generator may use all available areas.</small>
+                <span asp-validation-for="SelectedAreaIDs" class="text-danger"></span>
             </div>
         </div>
 
+        <!-- Auto-generate questions -->
+        <div class="row mb-3">
+            <div class="col-12">
+                <label class="form-label">Number of Questions (auto-generate)</label>
+                <select asp-for="SelectedQuestionCount" class="form-select">
+                    <option value="">-- Select number of questions --</option>
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                    <option value="30">30</option>
+                    <option value="40">40</option>
+                    <option value="50">50</option>
+                </select>
+                <span asp-validation-for="SelectedQuestionCount" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-6">
+                <button type="submit" class="btn btn-outline-primary w-100" formaction="?handler=Generate">Generate Preview</button>
+            </div>
+        </div>
+
+        @* Preview block: rendered when server populated PreviewQuestions *@
+        @if (Model.PreviewQuestions?.Any() ?? false)
+        {
+            <div class="row mb-3">
+                <div class="col-12">
+                    <h5>Preview Questions (@Model.SelectedQuestionCount)</h5>
+                    <ul class="list-group">
+                        @foreach (var q in Model.PreviewQuestions)
+                        {
+                            <li class="list-group-item">
+                                <strong>@q.QuestionID</strong>: @q.QuestionText
+                                @if (!string.IsNullOrWhiteSpace(q.AreaName))
+                                {
+                                    <div class="text-muted small">Area: @q.AreaName</div>
+                                }
+                                @* Hidden inputs so SelectedQuestionIDs post back on Confirm *@
+                                <input type="hidden" name="SelectedQuestionIDs" value="@q.QuestionID" />
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        }
+
         <!-- Buttons -->
         <div class="d-flex gap-2">
-            <!-- Save explicitly posts to the default OnPost handler -->
+            <!-- Save explicitly posts to the default OnPost handler (manual selection) -->
             <button type="submit" class="btn btn-primary" formaction="?handler="><i class="bi bi-save"></i> Save</button>
             <a asp-page="BrowseAssessments" class="btn btn-secondary"><i class="bi bi-arrow-left"></i> Cancel</a>
             <a asp-page="AddAssessment" class="btn btn-outline-primary ms-auto"><i class="bi bi-plus-square"></i> Add New</a>

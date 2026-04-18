@@ -13,61 +13,94 @@
 
     <div class="row">
 
-        <!--===================Assessment Name Textbox==================-->
-        <div class="row">
-            <div class="col-4">
-                <label asp-for="NewAssessment.AssessmentName" class="form-label" id="LabelText">Assessment Name:</label>
-            </div>
+        <!-- Assessment Name -->
+        <div class="row mb-3">
             <div class="col-12">
+                <label asp-for="NewAssessment.AssessmentName" class="form-label">Assessment Name:</label>
                 <input asp-for="NewAssessment.AssessmentName" type="text" class="form-control" />
                 <span asp-validation-for="NewAssessment.AssessmentName" class="text-danger"></span>
             </div>
         </div>
-        <!--===================End of Assessment Name Textbox==================-->
 
-        <!--===================Assessment Description Textbox==================-->
-        <div class="row">
-            <div class="col-4">
-                <label asp-for="NewAssessment.AssessmentDescription" class="form-label" id="LabelText">Assessment Description:</label>
-            </div>
+        <!-- Assessment Description -->
+        <div class="row mb-3">
             <div class="col-12">
-                <input asp-for="NewAssessment.AssessmentDescription" type="text" class="form-control" />
+                <label asp-for="NewAssessment.AssessmentDescription" class="form-label">Assessment Description:</label>
+                <textarea asp-for="NewAssessment.AssessmentDescription" class="form-control" rows="3"></textarea>
                 <span asp-validation-for="NewAssessment.AssessmentDescription" class="text-danger"></span>
             </div>
         </div>
-        <!--===================End of Assessment Description Textbox==================-->
 
-        <!--===================Assessment Area Textbox==================-->
-        <div class="row">
-            <div class="col-4">
-                <label asp-for="NewAssessment.AssessmentName" class="form-label" id="LabelText">Assessment Area:</label>
-            </div>
+        <!-- Question Count selection -->
+        <div class="row mb-3">
             <div class="col-12">
-                <select asp-for="SelectedAssessmentAreaID"
-                        asp-items="Model.AssessmentArea"
-                        class="form-control"
-                        onchange="location.href='?areaId=' + this.value;">
+                <label class="form-label">Number of Questions</label>
+                <select asp-for="SelectedQuestionCount" class="form-select">
+                    <option value="">-- Select number of questions --</option>
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                    <option value="30">30</option>
+                    <option value="40">40</option>
+                    <option value="50">50</option>
                 </select>
+                <span asp-validation-for="SelectedQuestionCount" class="text-danger"></span>
             </div>
         </div>
-        <!--===================End of Assessment Area Textbox==================-->
-        @if (Model.SelectedAssessmentAreaID.HasValue)
+
+        <!-- Generate Preview button -->
+        <div class="row mb-3">
+            <div class="col-6">
+                <button type="submit" class="btn btn-outline-primary w-100" formaction="?handler=Generate">Generate Preview</button>
+            </div>
+
+            <!-- Confirm will be enabled after preview; posts to Confirm handler -->
+            <div class="col-6">
+                <button type="submit" class="btn btn-primary w-100" formaction="?handler=Confirm">Confirm & Save</button>
+            </div>
+        </div>
+
+        @* Validation summary *@
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+
+        @* Preview block: rendered when server populated PreviewQuestions *@
+        @if (Model.PreviewQuestions?.Any() ?? false)
         {
-            <label class="form-label mt-3">Questions in this area</label>
-            <select asp-for="SelectedQuestionIDs"
-                    asp-items="Model.QuestionOptions"
-                    class="form-select"
-                    multiple>
-            </select>
-            <span asp-validation-for="SelectedQuestionIDs" class="text-danger"></span>
+            <div class="row mb-3">
+                <div class="col-12">
+                    <h5>Preview Questions (@Model.SelectedQuestionCount)</h5>
+                    <ul class="list-group">
+                        @foreach (var q in Model.PreviewQuestions)
+                        {
+                            <li class="list-group-item">
+                                <strong>@q.QuestionID</strong>: @q.QuestionText
+                                @if (!string.IsNullOrWhiteSpace(q.AreaName))
+                                {
+                                    <div class="text-muted small">Area: @q.AreaName</div>
+                                }
+                                @* Hidden inputs so SelectedQuestionIDs post back on Confirm *@
+                                <input type="hidden" name="SelectedQuestionIDs" value="@q.QuestionID" />
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
         }
 
-        <!--===================Submit Button==================-->
-        <div class="row my-2">
-            <div class="col-12">
-                <button type="submit" class="form-control btn btn-primary"> Confirm </button>
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="text-danger">
+                <ul>
+                    @foreach (var err in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                    {
+                        <li>@err.ErrorMessage</li>
+                    }
+                </ul>
             </div>
-        </div>
-        <!--=================End of Submit Button==================-->
+        }
+
     </div>
 </form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

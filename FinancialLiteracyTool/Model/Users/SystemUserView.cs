@@ -9,5 +9,7 @@
         public int UserID { get; set; }
         public int SystemUserID { get; set; }
         public bool IsAdmin { get; set; }
+        public string? CoachFirstName { get; set; }
+        public string? CoachLastName { get; set; }
     }// End of 'SystemUserView' Class.
 }// End of 'namespace'.

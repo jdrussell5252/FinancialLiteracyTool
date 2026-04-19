@@ -18,6 +18,7 @@ namespace FinancialLiteracyTool.Pages.Account
 
         public void OnGet()
         {
+      
 
             // Safely access the NameIdentifier claim
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
@@ -27,6 +28,7 @@ namespace FinancialLiteracyTool.Pages.Account
                 int userId = int.Parse(userIdClaim.Value); // Use the claim value only if it exists
                 CheckIfUserIsAdmin(userId);
                 PopulateProfileImage(userId);
+                GetAssessmentsTaken(userId);
             }
             /*--------------------ADMIN PRIV----------------------*/
         }//End of 'OnGet'.
@@ -36,27 +38,34 @@ namespace FinancialLiteracyTool.Pages.Account
 
             using (SqlConnection conn = new SqlConnection(AppHelper.GetDBConnectionString()))
             {
-                string cmdText = "SELECT SystemUserID, SystemUserProfileImage, SystemUsername FROM SystemUser " +
+                string cmdText = "SELECT SystemUserID, SystemUserProfileImage, SystemUsername, SystemUserFName, SystemUserLName FROM SystemUser " +
                     "WHERE SystemUserID = @SystemUserID";
                 SqlCommand cmd = new SqlCommand(cmdText, conn);
                 cmd.Parameters.AddWithValue("@SystemUserID", id);
                 conn.Open();
                 SqlDataReader reader = cmd.ExecuteReader();
 
-
                 if (reader.HasRows)
                 {
                     reader.Read();
+
+                    // ID + Image
                     if (reader[0] != System.DBNull.Value)
                     {
-                        CurrentProfile.SystemUserProfileImagePath = reader.GetString(1);
                         CurrentProfile.SystemUserID = reader.GetInt32(0);
+                    }
+
+                    if (reader[1] != System.DBNull.Value)
+                    {
+                        CurrentProfile.SystemUserProfileImagePath = reader.GetString(1);
                     }
                     else
                     {
                         CurrentProfile.SystemUserProfileImagePath = "";
                     }
-                    if (reader[1] != System.DBNull.Value)
+
+                    // Username
+                    if (reader[2] != System.DBNull.Value)
                     {
                         CurrentProfile.SystemUserName = reader.GetString(2);
                     }
@@ -65,9 +74,31 @@ namespace FinancialLiteracyTool.Pages.Account
                         CurrentProfile.SystemUserName = "";
                     }
 
-                }
+                    // First Name
+                    if (reader[3] != System.DBNull.Value)
+                    {
+                        CurrentProfile.SystemUserFirstName = reader.GetString(3);
+                    }
+                    else
+                    {
+                        CurrentProfile.SystemUserFirstName = "";
+                    }
 
+                    // Last Name
+                    if (reader[4] != System.DBNull.Value)
+                    {
+                        CurrentProfile.SystemUserLastName = reader.GetString(4);
+                    }
+                    else
+                    {
+                        CurrentProfile.SystemUserLastName = "";
+                    }
+                }
             }
+
+
+
+            
         }//End of 'PopulateProfileImage'.
 
         /*--------------------ADMIN PRIV----------------------*/

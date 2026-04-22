@@ -68,6 +68,7 @@ namespace FinancialLiteracyTool.Pages.UserPages
                        a.AssessmentDescription,
                        ua.UserAssessmentID,
                        ua.IsFinished,
+                       ua.CurrentQuestionIndex,
                        (SELECT COUNT(*) FROM AssessmentQuestion aq WHERE aq.AssessmentID = a.AssessmentID) AS TotalQuestions
                    FROM Assessment AS a
                    LEFT JOIN UserAssessments AS ua 

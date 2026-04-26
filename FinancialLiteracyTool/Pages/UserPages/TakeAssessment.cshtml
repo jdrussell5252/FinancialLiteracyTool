@@ -206,11 +206,12 @@
     restoreAnswers();
     showQuestion(currentQuestion);*/
 
-    // localStorage.clear();
+    localStorage.clear();
 
     let currentQuestion = 0;
 
-    if (localStorage.getItem("index") != null) {
+    var lastIndex = localStorage.getItem("index");
+    if (lastIndex != null && JSON.parse(localStorage.getItem("index"))[@Model.CurrAssessmentID] != undefined) {
         currentQuestion = JSON.parse(localStorage.getItem("index"))[@Model.CurrAssessmentID];
     }
 
@@ -220,7 +221,7 @@
     // =============================
     // SHOW QUESTION
     // =============================
-    async function showQuestion(index) {
+    function showQuestion(index) {
         questions.forEach((q, i) => {
             q.classList.remove("active");
             if (i === index) q.classList.add("active");
@@ -265,7 +266,6 @@
             });
 
             r.parentElement.classList.add("selected");
-
         });
     });
 

@@ -46,7 +46,7 @@
     <button class="btn btn-secondary" id="prevBtn">Previous</button>
     <button class="btn btn-primary" id="nextBtn">Next</button>
 
-    <a asp-page="/Assessment/ConfirmSubmission"
+    <a asp-page="/UserPages/ConfirmSubmission"
        class="btn btn-success"
        id="finishBtn"
        style="display:none;">
@@ -56,7 +56,18 @@
 </div>
 
 <script>
-    let currentQuestion = 0;
+    /*localStorage.clear()
+    if (localStorage.getItem("currIndex") == null) {
+        localStorage.setItem("currIndex", JSON.stringify("0");
+    } else {
+        alert("init " + Number(localStorage.getItem("currIndex")));
+    }
+
+    //localStorage.setItem("currIndex", 0);
+    //alert("init " + Number(localStorage.getItem("currIndex")));
+
+    //let currentQuestion = 0;
+    let currentQuestion = Number(localStorage.getItem("currIndex"));
     const questions = document.querySelectorAll(".question");
     const total = questions.length;
 
@@ -81,9 +92,12 @@
         r.addEventListener('change', () => {
             const qId = r.name.replace("q_", "");
             const answers = JSON.parse(localStorage.getItem("answers") || "{}");
+            const index = JSON.parse(localStorage.getItem("currIndex") || "{}");
+            index[0] = currentQuestion;
 
             answers[qId] = r.value;
             localStorage.setItem("answers", JSON.stringify(answers));
+            localStorage.setItem("currIndex", JSON.stringify(index));
 
             // Highlight selected
             const parent = r.closest(".question");
@@ -92,6 +106,166 @@
             });
 
             r.parentElement.classList.add("selected");
+        });
+    });
+
+    // =============================
+    // RESTORE ANSWERS
+    // =============================
+    function restoreAnswers() {
+        const answers = JSON.parse(localStorage.getItem("answers") || "{}");
+
+        Object.keys(answers).forEach(qId => {
+            const value = answers[qId];
+
+            const radios = document.querySelectorAll(`input[name="q_${qId}"]`);
+            radios.forEach(r => {
+                if (r.value === value) {
+                    r.checked = true;
+                    r.parentElement.classList.add("selected");
+                }
+            });
+        });
+    }
+
+    // =============================
+    // NEXT BUTTON (validation added)
+    // =============================
+    document.getElementById("nextBtn").addEventListener("click", () => {
+        const radios = questions[currentQuestion].querySelectorAll('input[type="radio"]');
+        const answered = Array.from(radios).some(r => r.checked);
+
+        if (!answered) {
+            alert("Please select an answer before continuing.");
+            return;
+        }
+
+        //temp = Number(localStorage.getItem("currIndex")) + 1;
+        //localStorage.setItem("currIndex", temp);
+        //   alert("next " + currentQuestion);
+
+        currentQuestion++;
+        //localStorage.setItem("currIndex", currentQuestion);
+        showQuestion(currentQuestion);
+    });
+
+    // =============================
+    // PREVIOUS BUTTON
+    // =============================
+    document.getElementById("prevBtn").addEventListener("click", () => {
+        //temp = Number(localStorage.getItem("currIndex")) + 1;
+        //localStorage.setItem("currIndex", temp);
+        //    alert("prev " + currentQuestion);
+
+        currentQuestion--;
+        //localStorage.setItem("currIndex", (currentQuestion));
+        showQuestion(currentQuestion);
+    });
+
+    // =============================
+    // SUBMIT TO BACKEND
+    // =============================
+    document.getElementById("finishBtn").addEventListener("click", async (e) => {
+        e.preventDefault();
+
+        const answers = localStorage.getItem("answers") || "{}";
+
+        // localStorage.setItem("currIndex", JSON.stringify(currentQuestion));
+        const index = localStorage.getItem("currIndex") || "{}";
+
+        alert("Hm! Index = " + index);
+
+        const res = await fetch("@Url.Page("/UserPages/TakeAssessment", "SaveAnswers")", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "RequestVerificationToken": document.querySelector('input[name="__RequestVerificationToken"]')?.value
+            },
+            body: answers
+        });
+
+        const res2 = await fetch("@Url.Page("/UserPages/TakeAssessment", "SaveIndex")", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+                "RequestVerificationToken": document.querySelector('input[name="__RequestVerificationToken"]')?.value
+            },
+            body: index
+            });
+
+        if (res.ok && res2.ok) {            
+            window.location.href = "@Url.Page("/UserPages/ConfirmSubmission")?id=@Model.CurrAssessmentID&NumQuestions=@Model.NumQuestions";
+        } else {
+            alert("Could not save answers. Please try again.");
+        }
+    });
+
+    // =============================
+    // INIT
+    // =============================
+    restoreAnswers();
+    showQuestion(currentQuestion);*/
+
+    // localStorage.clear();
+
+    let currentQuestion = 0;
+
+    if (localStorage.getItem("index") != null) {
+        currentQuestion = JSON.parse(localStorage.getItem("index"))[@Model.CurrAssessmentID];
+    }
+
+    const questions = document.querySelectorAll(".question");
+    const total = questions.length;
+
+    // =============================
+    // SHOW QUESTION
+    // =============================
+    async function showQuestion(index) {
+        questions.forEach((q, i) => {
+            q.classList.remove("active");
+            if (i === index) q.classList.add("active");
+        });
+
+        document.getElementById("prevBtn").style.display = index === 0 ? "none" : "inline-block";
+        document.getElementById("nextBtn").style.display = index === total - 1 ? "none" : "inline-block";
+        document.getElementById("finishBtn").style.display = index === total - 1 ? "inline-block" : "none";
+    }
+
+    // =============================
+    // SAVE ANSWERS
+    // =============================
+    document.querySelectorAll('input[type="radio"]').forEach(r => {
+        r.addEventListener('change', async (e) => {
+
+            const qId = r.name.replace("q_", "");
+            const answers = JSON.parse(localStorage.getItem("answers") || "{}");
+            const index = JSON.parse(localStorage.getItem("index") || "{}");
+
+            answers[qId] = r.value;
+            index[@Model.CurrAssessmentID] = currentQuestion;
+            localStorage.setItem("answers", JSON.stringify(answers));
+            localStorage.setItem("index", JSON.stringify(index));
+
+            const indexJSON = localStorage.getItem("index") || "{}";
+
+            // Save curr index
+            await fetch("@Url.Page("/UserPages/TakeAssessment", "SaveIndex")", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "RequestVerificationToken": document.querySelector('input[name="__RequestVerificationToken"]')?.value
+                },
+                body: indexJSON
+            });
+
+            // Highlight selected
+            const parent = r.closest(".question");
+            parent.querySelectorAll(".choice-option").forEach(opt => {
+                opt.classList.remove("selected");
+            });
+
+            r.parentElement.classList.add("selected");
+
         });
     });
 
@@ -145,8 +319,9 @@
         e.preventDefault();
 
         const answers = localStorage.getItem("answers") || "{}";
+        const index = localStorage.getItem("index") || "{}";
 
-        const res = await fetch("@Url.Page("/Assessment/TakeAssessment", "SaveAnswers")", {
+        const res = await fetch("@Url.Page("/UserPages/TakeAssessment", "SaveAnswers")", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -156,17 +331,19 @@
         });
 
         if (res.ok) {
-            window.location.href = "@Url.Page("/Assessment/ConfirmSubmission")?id=@Model.CurrAssessmentID&NumQuestions=@Model.NumQuestions";
+            window.location.href = "@Url.Page("/UserPages/ConfirmSubmission")?id=@Model.CurrAssessmentID&NumQuestions=@Model.NumQuestions";
         } else {
             alert("Could not save answers. Please try again.");
         }
+
+
     });
 
     // =============================
     // INIT
     // =============================
     restoreAnswers();
-    showQuestion(0);
+    showQuestion(currentQuestion);
 </script>
 
 <form method="post" style="display:none;">

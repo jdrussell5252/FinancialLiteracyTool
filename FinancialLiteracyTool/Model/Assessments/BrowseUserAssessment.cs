@@ -2,6 +2,7 @@
 {
     public class BrowseUserAssessment
     {
+        public int UserAssessmentID { get; set; }
         public int AssessmentID { get; set; }
         public string? AssessmentName { get; set; }
         public string? AssessmentDescription { get; set; }

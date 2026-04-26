@@ -1,6 +1,7 @@
 using FinancialLiteracyTool.Model.Questions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Diagnostics;
 using System.Text.Json;
 
 namespace FinancialLiteracyTool.Pages.Assessment
@@ -23,7 +24,7 @@ namespace FinancialLiteracyTool.Pages.Assessment
 
             if (string.IsNullOrWhiteSpace(json))
             {
-                return RedirectToPage("/Assessment/TakeAssessment");
+                return RedirectToPage("/UserPages/TakeAssessment");
             }
 
             var answers = JsonSerializer.Deserialize<Dictionary<string, string>>(json) ?? new();
@@ -39,7 +40,7 @@ namespace FinancialLiteracyTool.Pages.Assessment
 
             var json = TempData["AnswersJson"] as string;
             if (string.IsNullOrWhiteSpace(json))
-                return RedirectToPage("/Assessment/TakeAssessment");
+                return RedirectToPage("/UserPages/TakeAssessment");
 
             var answers = JsonSerializer.Deserialize<Dictionary<string, string>>(json) ?? new();
             var answeredCount = answers.Values.Count(v => !string.IsNullOrWhiteSpace(v));
@@ -47,11 +48,11 @@ namespace FinancialLiteracyTool.Pages.Assessment
             if (answeredCount < TotalQuestions)
             {
                 // stay on confirm page; button is disabled anyway
-                return RedirectToPage("/Assessment/ConfirmSubmission");
+                return RedirectToPage("/UserPages/ConfirmSubmission");
             }
 
             // TODO: Save + score here safely
-            return RedirectToPage("/Assessment/SubmissionSuccess", new { assessmentId = id });
+            return RedirectToPage("/UserPages/SubmissionSuccess", new { assessmentId = id });
         }
     }
 }

@@ -17,9 +17,10 @@ namespace FinancialLiteracyTool.Pages.UserPages
         public int NumQuestions { get; set; }
         public List<QuestionChoices> UserAnswers { get; set; } = new();
         public int CurrAssessmentID { get; set; }
-        public void OnGet(int id)
+        public int CurrQuestionIndex { get; set; }
+        public IActionResult OnGet(int id, int userAssessmentId, int index = 0)
         {
-            CurrAssessmentID = id;
+            
             // Safely access the NameIdentifier claim
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
             /*--------------------ADMIN PRIV----------------------*/
@@ -30,9 +31,17 @@ namespace FinancialLiteracyTool.Pages.UserPages
             }
             /*--------------------ADMIN PRIV----------------------*/
 
+            CurrAssessmentID = userAssessmentId;
+
+            CurrQuestionIndex = index;
+
+            Console.WriteLine();
+
             PopulateAssessmentQuestions(id);
             PopulateAssessmentChoices(id);
             NumQuestions = Questions.Count;
+
+            return Page();
         }//End of 'OnGet'.
 
         private void PopulateAssessmentQuestions(int id)
@@ -116,12 +125,19 @@ namespace FinancialLiteracyTool.Pages.UserPages
         }//End of 'CheckIfUserIsAdmin'.
         /*--------------------ADMIN PRIV----------------------*/
 
+        // !! DO NOT DELETE, These allow answers and such to be saved !!
         public IActionResult OnPostSaveAnswers([FromBody] Dictionary<string, string> answers)
         {
             // Store JSON for ConfirmSubmission to read
             TempData["AnswersJson"] = JsonSerializer.Serialize(answers);
             return new OkResult();
+        }
 
+        public IActionResult OnPostSaveIndex([FromBody] Dictionary<string, int> index)
+        {
+            // Store JSON for ConfirmSubmission to read
+            TempData["CurrIndex"] = JsonSerializer.Serialize(index);
+            return new OkResult();
         }
     }
 }

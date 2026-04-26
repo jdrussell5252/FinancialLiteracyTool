@@ -92,7 +92,7 @@ namespace FinancialLiteracyTool.Pages.UserPages
                 insertcmd.Parameters.AddWithValue("@Result", Score);
                 insertcmd.ExecuteScalar();
 
-                string fincmdText = "UPDATE UserAssessments SET IsFinished = 'TRUE' WHERE AssessmentID = @UserAssessmentID;";
+                string fincmdText = "UPDATE UserAssessments SET IsFinished = 'TRUE' WHERE UserAssessmentID = @UserAssessmentID;";
                 SqlCommand fincmd = new SqlCommand(fincmdText, conn);
                 fincmd.Parameters.AddWithValue("@UserAssessmentID", id);
                 fincmd.ExecuteScalar();

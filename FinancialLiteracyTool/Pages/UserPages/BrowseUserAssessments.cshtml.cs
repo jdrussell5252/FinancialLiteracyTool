@@ -3,8 +3,11 @@ using FinancialLiteracyTool.MyAppHelper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Data.SqlClient;
+using System.Diagnostics;
 using System.Security.Claims;
+using System.Text.Json;
 
 namespace FinancialLiteracyTool.Pages.UserPages
 {
@@ -21,6 +24,7 @@ namespace FinancialLiteracyTool.Pages.UserPages
         public string? AssessmentDescription { get; set; }
         public string? Status { get; set; } 
         public int ProgressPercent { get; set; }
+        public int CurrentIndex { get; set; }
         // public int UserAssessmentID { get; set; }
 
 
@@ -34,6 +38,8 @@ namespace FinancialLiteracyTool.Pages.UserPages
                 int userId = int.Parse(userIdClaim.Value); // Use the claim value only if it exists
                 PopulateAssessments(userId);
             }
+
+            TempData.Keep("CurrIndex");
 
             // === Pagination logic ===
             PageNumber = pageNumber < 1 ? 1 : pageNumber;
@@ -59,6 +65,10 @@ namespace FinancialLiteracyTool.Pages.UserPages
 
         private void PopulateAssessments(int userId)
         {
+            // Reads current index of assessment from json
+            
+            var json = TempData["CurrIndex"] as string;            
+
             using (SqlConnection conn = new SqlConnection(AppHelper.GetDBConnectionString()))
             {
                 string query = @"
@@ -68,7 +78,6 @@ namespace FinancialLiteracyTool.Pages.UserPages
                        a.AssessmentDescription,
                        ua.UserAssessmentID,
                        ua.IsFinished,
-                       ua.CurrentQuestionIndex,
                        (SELECT COUNT(*) FROM AssessmentQuestion aq WHERE aq.AssessmentID = a.AssessmentID) AS TotalQuestions
                    FROM Assessment AS a
                    LEFT JOIN UserAssessments AS ua 
@@ -83,24 +92,37 @@ namespace FinancialLiteracyTool.Pages.UserPages
 
                 // NEEDS FIXING, 
                 while (reader.Read())
-                {                
+                {
+
+                    int temp = 0;
+                    if (json != null)
+                    {
+                        var index = JsonSerializer.Deserialize<Dictionary<string, int>>(json) ?? new();
+                        if (index.ContainsKey(reader.GetInt32(3) + ""))
+                        {
+                            temp = index[reader.GetInt32(3) + ""];
+                        }
+                    }
+                    CurrentIndex = temp;
+
                     bool? isFinished = reader.IsDBNull(4) ? false : (bool?)reader.GetBoolean(4);
                     int totalQuestions = reader.IsDBNull(5) ? 1 : reader.GetInt32(5);
-                    //int currentIndex = reader.IsDBNull(4) ? 0 : int.Parse(reader.GetString(4));
 
-                    string status = isFinished == false ? "NotStarted"
-                                  : isFinished == true ? "Completed"
-                                  : "InProgress";
+                    //int currentIndex = temp.Values;
+
+                    string status = isFinished == true ? "Completed"
+                                  : CurrentIndex != 0 ? "InProgress"
+                                  : "NotStarted";
 
                     int AssessmentID = reader.GetInt32(0);
                     string AssessmentName = reader.GetString(1);
                     string AssessmentDescription = reader.IsDBNull(2) ? "" : reader.GetString(2);
                     int UserAssessmentID = reader.GetInt32(3);
 
-
-                    // int progress = status == "NotStarted" ? 0
-                    //             : status == "Completed" ? 100
-                    //             : (int)Math.Round((double)currentIndex / totalQuestions * 100);
+                    int progress = status == "InProgress" ? (int)Math.Round((double)(CurrentIndex + 1) / totalQuestions * 100)
+                                 : status == "NotStarted" ? 0
+                                 : status == "Completed" ? 100
+                                 : -1;
                     Assessments.Add(new BrowseUserAssessment
                     {
                         AssessmentID = reader.GetInt32(0),
@@ -108,7 +130,7 @@ namespace FinancialLiteracyTool.Pages.UserPages
                         AssessmentDescription = reader.IsDBNull(2) ? "" : reader.GetString(2),
                         UserAssessmentID = reader.GetInt32(3),
                         Status = status,
-                        // ProgressPercent = progress
+                        ProgressPercent = progress
                     });
                 }
             }

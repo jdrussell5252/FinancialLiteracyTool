@@ -125,12 +125,19 @@ namespace FinancialLiteracyTool.Pages.UserPages
         }//End of 'CheckIfUserIsAdmin'.
         /*--------------------ADMIN PRIV----------------------*/
 
+        // !! DO NOT DELETE, These allow answers and such to be saved !!
         public IActionResult OnPostSaveAnswers([FromBody] Dictionary<string, string> answers)
         {
             // Store JSON for ConfirmSubmission to read
             TempData["AnswersJson"] = JsonSerializer.Serialize(answers);
             return new OkResult();
+        }
 
+        public IActionResult OnPostSaveIndex([FromBody] Dictionary<string, int> index)
+        {
+            // Store JSON for ConfirmSubmission to read
+            TempData["CurrIndex"] = JsonSerializer.Serialize(index);
+            return new OkResult();
         }
     }
 }

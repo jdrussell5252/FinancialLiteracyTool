@@ -15,49 +15,42 @@
             <div class="col-md-4 mb-4">
                 <div class="card shadow p-3">
                     <h6>Total Users</h6>
-                    <h2>--</h2>
+                    <h2>@Model.TotalUsers</h2>
                 </div>
             </div>
 
             <div class="col-md-4 mb-4">
                 <div class="card shadow p-3">
                     <h6>Assessments Taken</h6>
-                    <h2>--</h2>
+                    <h2>@Model.AssessmentsTaken</h2>
                 </div>
             </div>
 
             <div class="col-md-4 mb-4">
                 <div class="card shadow p-3">
                     <h6>Assessments Completed</h6>
-                    <h2>--</h2>
+                    <h2>@Model.Completed</h2>
                 </div>
             </div>
 
             <div class="col-md-4 mb-4">
                 <div class="card shadow p-3">
                     <h6>Assessments In Progress</h6>
-                    <h2>--</h2>
+                    <h2>@Model.InProgress</h2>
                 </div>
             </div>
 
             <div class="col-md-4 mb-4">
                 <div class="card shadow p-3">
                     <h6>Completion Rate</h6>
-                    <h2>--</h2>
+                    <h2>@Model.CompletionRate</h2>
                 </div>
             </div>
 
             <div class="col-md-4 mb-4">
                 <div class="card shadow p-3">
                     <h6>Average Score</h6>
-                    <h2>--</h2>
-                </div>
-            </div>
-
-            <div class="col-md-4 mb-4">
-                <div class="card shadow p-3">
-                    <h6>Average Progress</h6>
-                    <h2>--</h2>
+                    <h2>@Model.AverageScore.ToString("0.0")%</h2>
                 </div>
             </div>
 

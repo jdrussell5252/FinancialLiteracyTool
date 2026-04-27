@@ -118,10 +118,8 @@ namespace FinancialLiteracyTool.Pages.UserPages
 
         public IActionResult OnPostSaveAnswers([FromBody] Dictionary<string, string> answers)
         {
-            // Store JSON for ConfirmSubmission to read
             TempData["AnswersJson"] = JsonSerializer.Serialize(answers);
             return new OkResult();
-
         }
     }
 }

@@ -36,7 +36,10 @@
                     Yes, Submit Assessment
                 </button>
 
-                <a asp-page="/UserPages/TakeAssessment" class="btn btn-secondary">
+                <a asp-page="/UserPages/TakeAssessment"
+                   asp-route-id="@Model.CurrAssessmentID"
+                   asp-route-userAssessmentID="@Model.CurrUserAssessmentID"
+                   class="btn btn-secondary">
                     Go Back
                 </a>
             </form>

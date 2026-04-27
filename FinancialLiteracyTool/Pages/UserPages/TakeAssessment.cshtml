@@ -4,65 +4,52 @@
 }
 
 <style>
-    body {
-        background-color: #f8f9fa;
+    .question {
+        display: none;
     }
 
+        .question.active {
+            display: block;
+        }
 </style>
 
-<div class="exam-container">
-    <div id="questionContainer">
-        <!--not sure what the Take(30) does here, doesn't seem to do anything if removed-->
-        @foreach (var q in Model.Questions.Take(30))
-        {
-            <div class="question mb-4">
-                <div class="fw-bold mb-2">
-                    Question @(Model.Questions.Take(30).ToList().IndexOf(q) + 1)
-                    of @Model.Questions.Take(30).Count()
-                </div>
+<div class="container mt-4">
 
-                <div class="mb-3">@q.QuestionText</div>
+    @for (int i = 0; i < Model.Questions.Count; i++)
+    {
+        var q = Model.Questions[i];
 
-                @foreach (var c in Model.Choices.Where(x => x.QuestionID == q.QuestionID))
-                {
-                    var safeChoice = c.QuestionChoiceText.Replace(" ", "_").Replace("\"", "").Replace("'", "");
-                    var inputId = $"q{q.QuestionID}_{safeChoice}";
-
-                    <label class="choice-option">
-                        <input type="radio"
-                               id="@inputId"
-                               name="q_@q.QuestionID"
-                               value="@c.QuestionChoiceID" />
-                        @c.QuestionChoiceText
-                    </label>
-                }
+        <div class="question">
+            <div class="fw-bold mb-2">
+                Question @(i + 1) of @Model.Questions.Count
             </div>
-        }
-    </div>
+
+            <div class="mb-3">@q.QuestionText</div>
+
+            @foreach (var c in Model.Choices.Where(x => x.QuestionID == q.QuestionID))
+            {
+                <div>
+                    <input type="radio"
+                           name="q_@q.QuestionID"
+                           value="@c.QuestionChoiceID" />
+                    @c.QuestionChoiceText
+                </div>
+            }
+        </div>
+    }
+
 </div>
 
-<!-- Navigation -->
-<div class="nav-buttons">
-    <button class="btn btn-secondary" id="prevBtn">Previous</button>
-    <button class="btn btn-primary" id="nextBtn">Next</button>
-
-    <a asp-page="/UserPages/ConfirmSubmission"
-       class="btn btn-success"
-       id="finishBtn"
-       style="display:none;">
-        Finish Assessment
-    </a>
-
+<div class="text-center mt-3">
+    <button id="prevBtn" class="btn btn-secondary">Previous</button>
+    <button id="nextBtn" class="btn btn-primary">Next</button>
+    <button id="finishBtn" class="btn btn-success" style="display:none;">Finish</button>
 </div>
 
 <script>
     let currentQuestion = 0;
     const questions = document.querySelectorAll(".question");
-    const total = questions.length;
 
-    // =============================
-    // SHOW QUESTION
-    // =============================
     function showQuestion(index) {
         questions.forEach((q, i) => {
             q.classList.remove("active");
@@ -70,105 +57,64 @@
         });
 
         document.getElementById("prevBtn").style.display = index === 0 ? "none" : "inline-block";
-        document.getElementById("nextBtn").style.display = index === total - 1 ? "none" : "inline-block";
-        document.getElementById("finishBtn").style.display = index === total - 1 ? "inline-block" : "none";
+        document.getElementById("nextBtn").style.display = index === questions.length - 1 ? "none" : "inline-block";
+        document.getElementById("finishBtn").style.display = index === questions.length - 1 ? "inline-block" : "none";
     }
 
-    // =============================
-    // SAVE ANSWERS
-    // =============================
+    // SAVE (SESSION ONLY)
     document.querySelectorAll('input[type="radio"]').forEach(r => {
         r.addEventListener('change', () => {
-            const qId = r.name.replace("q_", "");
-            const answers = JSON.parse(localStorage.getItem("answers") || "{}");
-
-            answers[qId] = r.value;
-            localStorage.setItem("answers", JSON.stringify(answers));
-
-            // Highlight selected
-            const parent = r.closest(".question");
-            parent.querySelectorAll(".choice-option").forEach(opt => {
-                opt.classList.remove("selected");
-            });
-
-            r.parentElement.classList.add("selected");
+            const answers = JSON.parse(sessionStorage.getItem("answers") || "{}");
+            answers[r.name] = r.value;
+            sessionStorage.setItem("answers", JSON.stringify(answers));
         });
     });
 
-    // =============================
-    // RESTORE ANSWERS
-    // =============================
-    function restoreAnswers() {
-        const answers = JSON.parse(localStorage.getItem("answers") || "{}");
+    // RESTORE
+    function restore() {
+        const answers = JSON.parse(sessionStorage.getItem("answers") || "{}");
 
-        Object.keys(answers).forEach(qId => {
-            const value = answers[qId];
-
-            const radios = document.querySelectorAll(`input[name="q_${qId}"]`);
-            radios.forEach(r => {
-                if (r.value === value) {
-                    r.checked = true;
-                    r.parentElement.classList.add("selected");
-                }
-            });
+        Object.keys(answers).forEach(key => {
+            const input = document.querySelector(`input[name="${key}"][value="${answers[key]}"]`);
+            if (input) input.checked = true;
         });
     }
 
-    // =============================
-    // NEXT BUTTON (validation added)
-    // =============================
-    document.getElementById("nextBtn").addEventListener("click", () => {
-        const radios = questions[currentQuestion].querySelectorAll('input[type="radio"]');
-        const answered = Array.from(radios).some(r => r.checked);
-
-        if (!answered) {
-            alert("Please select an answer before continuing.");
-            return;
-        }
-
+    document.getElementById("nextBtn").onclick = () => {
         currentQuestion++;
         showQuestion(currentQuestion);
-    });
+    };
 
-    // =============================
-    // PREVIOUS BUTTON
-    // =============================
-    document.getElementById("prevBtn").addEventListener("click", () => {
+    document.getElementById("prevBtn").onclick = () => {
         currentQuestion--;
         showQuestion(currentQuestion);
-    });
+    };
 
-    // =============================
-    // SUBMIT TO BACKEND
-    // =============================
-    document.getElementById("finishBtn").addEventListener("click", async (e) => {
-        e.preventDefault();
+    document.getElementById("finishBtn").onclick = async () => {
+        const answers = sessionStorage.getItem("answers") || "{}";
 
-        const answers = localStorage.getItem("answers") || "{}";
+        const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
 
-        const res = await fetch("@Url.Page("/UserPages/TakeAssessment", "SaveAnswers")", {
+        const res = await fetch("?handler=SaveAnswers", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "RequestVerificationToken": document.querySelector('input[name="__RequestVerificationToken"]')?.value
+                "RequestVerificationToken": token
             },
             body: answers
         });
 
         if (res.ok) {
-            window.location.href = "@Url.Page("/UserPages/ConfirmSubmission")?id=@Model.CurrAssessmentID&NumQuestions=@Model.NumQuestions";
+            sessionStorage.removeItem("answers");
+            window.location.href = "/UserPages/ConfirmSubmission?id=@Request.Query["id"]&userAssessmentID=@Model.CurrAssessmentID&NumQuestions=@Model.NumQuestions";
         } else {
-            alert("Could not save answers. Please try again.");
+            alert("Error saving answers.");
         }
-    });
+    };
 
-    // =============================
-    // INIT
-    // =============================
-    restoreAnswers();
+    restore();
     showQuestion(0);
 </script>
-
 <form method="post" style="display:none;">
     @Html.AntiForgeryToken()
 </form>

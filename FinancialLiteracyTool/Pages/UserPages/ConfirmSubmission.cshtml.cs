@@ -12,6 +12,7 @@ namespace FinancialLiteracyTool.Pages.Assessment
         public int AnsweredCount { get; private set; }
         public bool AllAnswered => AnsweredCount >= TotalQuestions;
         public int CurrAssessmentID { get; set; }
+        public int CurrUserAssessmentID { get; set; }
 
         public IActionResult OnGet(int id, int NumQuestions)
         {

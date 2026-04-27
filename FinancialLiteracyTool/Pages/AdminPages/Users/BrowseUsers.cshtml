@@ -64,7 +64,9 @@
 
                             <!-- Coach's Name -->
                             <td>
-
+                                @(string.IsNullOrEmpty(u.CoachFirstName)
+                                    ? "N/A"
+                                    : @u.CoachFirstName + " " + u.CoachLastName)
                             </td>
                             <!-- Actions -->
                             <td class="text-end">

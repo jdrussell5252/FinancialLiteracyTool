@@ -19,9 +19,12 @@ namespace FinancialLiteracyTool.Pages.UserPages
         public List<int> AnswerIDs { get; set; } = new List<int>();
         public int CorrectAnswers { get; set; }
         public float Score { get; set; }
+        public int CurrAssessmentID { get; set; }
 
         public void OnGet(int assessmentId)
         {
+            CurrAssessmentID = assessmentId;
+
             TempData.Keep("AnswersJson");
 
             var json = TempData["AnswersJson"] as string;
@@ -32,6 +35,7 @@ namespace FinancialLiteracyTool.Pages.UserPages
             CountCorrectAnswers(IDs);
             Score = (float)Math.Round((float)CorrectAnswers / Answers.Count * 100, 2);
             SaveResults(assessmentId);
+            TempData.Clear();
         }// End of ''.
 
         private void CountCorrectAnswers(string IDs)
@@ -92,7 +96,7 @@ namespace FinancialLiteracyTool.Pages.UserPages
                 insertcmd.Parameters.AddWithValue("@Result", Score);
                 insertcmd.ExecuteScalar();
 
-                string fincmdText = "UPDATE UserAssessments SET IsFinished = 'TRUE' WHERE AssessmentID = @UserAssessmentID;";
+                string fincmdText = "UPDATE UserAssessments SET IsFinished = 'TRUE' WHERE UserAssessmentID = @UserAssessmentID;";
                 SqlCommand fincmd = new SqlCommand(fincmdText, conn);
                 fincmd.Parameters.AddWithValue("@UserAssessmentID", id);
                 fincmd.ExecuteScalar();

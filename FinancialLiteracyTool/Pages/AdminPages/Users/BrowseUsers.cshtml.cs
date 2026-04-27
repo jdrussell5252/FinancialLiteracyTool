@@ -14,12 +14,12 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Users
         public bool IsAdmin { get; set; }
         public List<SystemUserView> Users { get; set; } = new List<SystemUserView>();
         public int PageNumber { get; set; } = 1;
-        public int PageSize { get; set; } = 5;
+        public int PageSize { get; set; } = 10;
         public int TotalCount { get; set; }
         public int SystemUserRole { get; set; }
         public int TotalPages => Math.Max(1, (int)Math.Ceiling((double)TotalCount / Math.Max(1, PageSize)));
 
-        public IActionResult OnGet(int pageNumber = 1, int pageSize = 5)
+        public IActionResult OnGet(int pageNumber = 1, int pageSize = 10)
         {
 
             // Safely access the NameIdentifier claim
@@ -41,7 +41,7 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Users
 
             // === Pagination logic ===
             PageNumber = pageNumber < 1 ? 1 : pageNumber;
-            PageSize = pageSize < 1 ? 5 : pageSize;
+            PageSize = pageSize < 1 ? 10 : pageSize;
 
             TotalCount = Users.Count;
 
@@ -89,7 +89,19 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Users
         {
             using (SqlConnection conn = new SqlConnection(AppHelper.GetDBConnectionString()))
             {
-                string query = "SELECT SystemUserID, SystemUserFname, SystemUserLName, SystemUsername, SystemUserRole FROM SystemUser";
+                string query = @" SELECT 
+                                    u.SystemUserID,
+                                    u.SystemUserFname,
+                                    u.SystemUserLName,
+                                    u.SystemUsername,
+                                    u.SystemUserRole,
+                                    coach.SystemUserFName AS CoachFirstName,
+                                    coach.SystemUserLName AS CoachLastName
+                                FROM SystemUser u
+                                LEFT JOIN CoachedUsers cu 
+                                    ON u.SystemUserID = cu.SystemUserID
+                                LEFT JOIN SystemUser coach 
+                                    ON cu.CoachID = coach.SystemUserID";
                 SqlCommand cmd = new SqlCommand(query, conn);
                 conn.Open();
                 SqlDataReader reader = cmd.ExecuteReader();
@@ -104,7 +116,9 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Users
                             UserLName = reader.GetString(2),
                             SystemUsername = reader.GetString(3),
                             SystemUserRole = reader.GetInt32(4),
-                            IsAdmin = (reader.GetInt32(4) == 3)
+                            IsAdmin = (reader.GetInt32(4) == 3),
+                            CoachFirstName = reader.IsDBNull(5) ? null : reader.GetString(5),
+                            CoachLastName = reader.IsDBNull(6) ? null : reader.GetString(6)
                         };
                         Users.Add(Auser);
 

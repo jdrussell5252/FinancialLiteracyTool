@@ -21,9 +21,14 @@
                          alt="User Picture"
                          class="profile-pic mb-3" />
 
-                    <h2 class="text-dark">
+                       <h2 class="text-dark">
+                        @Model.CurrentProfile.SystemUserFirstName
+                        @Model.CurrentProfile.SystemUserLastName
+                       </h2>
+
+                    <h5 class="text">
                         @Model.CurrentProfile.SystemUserName
-                    </h2>
+                    </h5>
 
                     <a asp-page="/Account/EditProfile"
                        asp-route-id="@Model.CurrentProfile.SystemUserID"
@@ -56,21 +61,13 @@
                     <div class="row text-center">
 
                         <!-- Assessments Taken -->
-                        <div class="col-md-6">
+                        <div class="col-md-12">
                             <h5>Assessments Taken</h5>
                             <h2 class="fw-bold display-5">
                                 @Model.AssessmentsTaken
                             </h2>
                         </div>
-
-                        <!-- Highest Score -->
-                        <div class="col-md-6">
-                            <h5>Highest Score</h5>
-                            <h2 class="fw-bold display-5">
-                                0%
-                            </h2>
-                        </div>
-
+=
                     </div>
 
                 </div>

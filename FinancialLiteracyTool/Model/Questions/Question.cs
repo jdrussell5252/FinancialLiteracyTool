@@ -10,5 +10,6 @@
         public string QuestionType { get; set; }
         public int QuestionTypeID { get; set; }
         public List<QuestionChoices> Choices { get; set; } = new();
+        public int CurrQuestionIndex { get; set; }
     }// End of 'Question' Class.
 }// End of 'namespace'.

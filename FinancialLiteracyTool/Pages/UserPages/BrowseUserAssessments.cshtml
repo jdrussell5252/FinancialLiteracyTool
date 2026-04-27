@@ -76,10 +76,8 @@
                         <div class="mt-auto">
                             @if (a.Status == "Completed")
                             {
-                                <a asp-page="/UserPages/ViewResults"
-                                   asp-route-id="@a.AssessmentID"
-                                   class="btn btn-success w-100">
-                                    View Results
+                                <a class="btn btn-secondary w-100 disabled" aria-disabled="true">
+                                    Already Completed
                                 </a>
                             }
                             else
@@ -105,10 +103,5 @@
             <h4>No Assessments Assigned</h4>
         </div>
     }
-</div>
 
-<script>
-    if (localStorage.getItem("currItem")) != null) {
-        println('g')
-    }
-</script>
+</div>

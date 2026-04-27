@@ -92,7 +92,6 @@
 
     document.getElementById("finishBtn").onclick = async () => {
         const answers = sessionStorage.getItem("answers") || "{}";
-
         const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
 
         const res = await fetch("?handler=SaveAnswers", {
@@ -105,10 +104,7 @@
         });
 
         if (res.ok) {
-            sessionStorage.removeItem("answers");
-            window.location.href = "/UserPages/ConfirmSubmission?id=@Request.Query["id"]&userAssessmentID=@Model.CurrAssessmentID&NumQuestions=@Model.NumQuestions";
-        } else {
-            alert("Error saving answers.");
+           window.location.href = `/UserPages/ConfirmSubmission?id=@(Request.Query["id"])&userAssessmentID=@Model.CurrAssessmentID&NumQuestions=@Model.NumQuestions`;
         }
     };
 

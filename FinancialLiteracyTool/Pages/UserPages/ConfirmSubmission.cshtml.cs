@@ -1,6 +1,8 @@
 using FinancialLiteracyTool.Model.Questions;
+using FinancialLiteracyTool.MyAppHelper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Data.SqlClient;
 using System.Diagnostics;
 using System.Text.Json;
 
@@ -15,9 +17,10 @@ namespace FinancialLiteracyTool.Pages.Assessment
         public int CurrAssessmentID { get; set; }
         public int CurrUserAssessmentID { get; set; }
 
-        public IActionResult OnGet(int id, int NumQuestions)
+        public IActionResult OnGet(int id, int userAssessmentID, int NumQuestions)
         {
             CurrAssessmentID = id;
+            CurrUserAssessmentID = userAssessmentID;
             TotalQuestions = NumQuestions;
             TempData.Keep("AnswersJson");
 
@@ -35,7 +38,7 @@ namespace FinancialLiteracyTool.Pages.Assessment
             return Page();
         }
 
-        public IActionResult OnPost(int id)
+        public IActionResult OnPost(int id, int userAssessmentID)
         {
             TempData.Keep("AnswersJson");
 
@@ -47,13 +50,23 @@ namespace FinancialLiteracyTool.Pages.Assessment
             var answeredCount = answers.Values.Count(v => !string.IsNullOrWhiteSpace(v));
 
             if (answeredCount < TotalQuestions)
-            {
-                // stay on confirm page; button is disabled anyway
                 return RedirectToPage("/UserPages/ConfirmSubmission");
-            }
 
-            // TODO: Save + score here safely
+            MarkAssessmentFinished(userAssessmentID);
+
             return RedirectToPage("/UserPages/SubmissionSuccess", new { assessmentId = id });
+        }
+
+        private void MarkAssessmentFinished(int userAssessmentID)
+        {
+            using (SqlConnection conn = new SqlConnection(AppHelper.GetDBConnectionString()))
+            {
+                string query = "UPDATE UserAssessments SET IsFinished = 1 WHERE UserAssessmentID = @UserAssessmentID";
+                SqlCommand cmd = new SqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("@UserAssessmentID", userAssessmentID);
+                conn.Open();
+                cmd.ExecuteNonQuery();
+            }
         }
     }
 }

@@ -114,15 +114,9 @@ namespace FinancialLiteracyTool.Pages.UserPages
                                   : CurrentIndex != 0 ? "InProgress"
                                   : "NotStarted";
 
-                    int AssessmentID = reader.GetInt32(0);
-                    string AssessmentName = reader.GetString(1);
-                    string AssessmentDescription = reader.IsDBNull(2) ? "" : reader.GetString(2);
-                    int UserAssessmentID = reader.GetInt32(3);
-
                     int progress = status == "InProgress" ? (int)Math.Round((double)(CurrentIndex + 1) / totalQuestions * 100)
                                  : status == "NotStarted" ? 0
-                                 : status == "Completed" ? 100
-                                 : -1;
+                                 : 100;
                     Assessments.Add(new BrowseUserAssessment
                     {
                         AssessmentID = reader.GetInt32(0),

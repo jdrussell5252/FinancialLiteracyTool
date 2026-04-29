@@ -8,7 +8,7 @@ using System.Security.Claims;
 namespace FinancialLiteracyTool.Pages.AdminPages
 {
     [Authorize]
-    public class StatsModel : PageModel
+    public class BrowseUserStatsModel : PageModel
     {
         public bool IsAdmin { get; set; }
         public int TotalUsers { get; set; }

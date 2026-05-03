@@ -61,7 +61,12 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Areas
                 }
                 return RedirectToPage("BrowseAreas");
             }
-            return Page();
+            else
+            {
+                // If the model state is not valid, return to the same page with validation errors
+                OnGet(id);
+                return Page();
+            }
         }// End of 'OnPost'.
 
         private void PopulateAreaName(int id)

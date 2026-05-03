@@ -11,16 +11,17 @@ namespace FinancialLiteracyTool.Pages.AdminPages
     public class BrowseUserStatsModel : PageModel
     {
         public bool IsAdmin { get; set; }
+
         public int TotalUsers { get; set; }
         public int AssessmentsTaken { get; set; }
         public int Completed { get; set; }
         public int InProgress { get; set; }
         public double CompletionRate { get; set; }
         public double AverageScore { get; set; }
-
+        public List<AssessmentStat> AssessmentAverages { get; set; } = new();
         public IActionResult OnGet()
         {
-            // 🔹 Get logged-in user ID
+            // Get logged-in user ID
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
 
             if (userIdClaim != null)
@@ -29,17 +30,17 @@ namespace FinancialLiteracyTool.Pages.AdminPages
                 CheckIfUserIsAdmin(userId);
             }
 
-            // 🔹 Block non-admins
+            // Block non-admins
             if (!IsAdmin)
             {
                 return Forbid();
             }
 
-            // 🔹 Load stats
             using (SqlConnection conn = new SqlConnection(AppHelper.GetDBConnectionString()))
             {
                 conn.Open();
 
+                // Basic stats
                 TotalUsers = Convert.ToInt32(new SqlCommand(
                     "SELECT COUNT(*) FROM dbo.SystemUser", conn).ExecuteScalar() ?? 0);
 
@@ -61,6 +62,32 @@ namespace FinancialLiteracyTool.Pages.AdminPages
 
                 AverageScore = Convert.ToDouble(new SqlCommand(
                     "SELECT AVG(CAST(Result AS FLOAT)) FROM dbo.Results", conn).ExecuteScalar() ?? 0);
+
+                // Area averages
+                string assessmentQuery = @"
+                SELECT 
+                    ass.AssessmentName,
+                    AVG(CAST(r.Result AS FLOAT))
+                FROM Results r
+                JOIN UserAssessments ua 
+                    ON r.UserAssessmentID = ua.UserAssessmentID
+                JOIN Assessment ass 
+                    ON ua.AssessmentID = ass.AssessmentID
+                GROUP BY ass.AssessmentName";
+
+                SqlCommand areaCmd = new SqlCommand(assessmentQuery, conn);
+                SqlDataReader reader = areaCmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    AssessmentAverages.Add(new AssessmentStat
+                    {
+                        AssessmentName = reader.GetString(0),
+                        AverageScore = reader.IsDBNull(1) ? 0 : reader.GetDouble(1)
+                    });
+                }
+
+                reader.Close();
             }
 
             return Page();
@@ -88,5 +115,11 @@ namespace FinancialLiteracyTool.Pages.AdminPages
                 }
             }
         }
+    }
+
+    public class AssessmentStat
+    {
+        public string AssessmentName { get; set; }
+        public double AverageScore { get; set; }
     }
 }

@@ -3,34 +3,36 @@
 @{
 }
 
-<div class="row text-center">
-    <div class="col-12">
-        <label class="form-label fs-1" id="LabelText">Add Area</label>
+<div class="container"> 
+    <div class="row text-center">
+        <div class="col-12">
+            <label class="form-label fs-1" id="LabelText">Add Area</label>
+        </div>
     </div>
-</div>
 
-<form method="post">
+    <form method="post">
 
-    <div class="row">
-
-        <!--===================AreaName Textbox==================-->
         <div class="row">
-            <div class="col-4">
-                <label asp-for="NewArea.AreaName" class="form-label" id="LabelText">Area Name:</label>
-            </div>
-            <div class="col-12">
-                <input asp-for="NewArea.AreaName" type="text" class="form-control" />
-                <span asp-validation-for="NewArea.AreaName" class="text-danger"></span>
-            </div>
-        </div>
-        <!--===================End of AreaName Text Textbox==================-->
 
-        <!--===================Submit Button==================-->
-        <div class="row my-2">
-            <div class="col-12">
-                <button type="submit" class="form-control btn btn-primary"> Confirm </button>
+            <!--===================AreaName Textbox==================-->
+            <div class="row">
+                <div class="col-4">
+                    <label asp-for="NewArea.AreaName" class="form-label" id="LabelText">Area Name:</label>
+                </div>
+                <div class="col-12">
+                    <input asp-for="NewArea.AreaName" type="text" class="form-control" />
+                    <span asp-validation-for="NewArea.AreaName" class="text-danger"></span>
+                </div>
             </div>
+            <!--===================End of AreaName Text Textbox==================-->
+
+            <!--===================Submit Button==================-->
+            <div class="row my-2">
+                <div class="col-12">
+                    <button type="submit" class="form-control btn btn-primary"> Confirm </button>
+                </div>
+            </div>
+            <!--=================End of Submit Button==================-->
         </div>
-        <!--=================End of Submit Button==================-->
-    </div>
-</form>
+    </form>
+</div>  

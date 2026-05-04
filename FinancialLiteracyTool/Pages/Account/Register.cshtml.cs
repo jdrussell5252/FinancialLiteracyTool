@@ -13,11 +13,8 @@ namespace FinancialLiteracyTool.Pages.Account
         [BindProperty]
         public Registration NewUser { get; set; }
 
-        public List<string> PasswordErrors { get; set; } = new();
-
         public IActionResult OnPost()
         {
-            PasswordErrors.Clear();
             var firstName = (NewUser.FirstName ?? string.Empty).Trim();
             var lastName = (NewUser.LastName ?? string.Empty).Trim();
             string password = (NewUser.Password ?? string.Empty).Trim();
@@ -25,15 +22,14 @@ namespace FinancialLiteracyTool.Pages.Account
             const int dbMaxName = 50;
             const int dbMaxPassword = 20;
 
-
             if (password.Length < 10)
-                PasswordErrors.Add("Password must be at least 10 characters long.");
+                ModelState.AddModelError("NewUser.Password", "Password must be at least 10 characters long.");
             if (!Regex.IsMatch(password, @"\d"))
-                PasswordErrors.Add("Password must contain at least one number.");
+                ModelState.AddModelError("NewUser.Password", "Password must contain at least one number.");
             if (!Regex.IsMatch(password, @"[A-Z]"))
-                PasswordErrors.Add("Password must contain at least one uppercase letter.");
+                ModelState.AddModelError("NewUser.Password", "Password must contain at least one uppercase letter.");
             if (!Regex.IsMatch(password, @"[a-z]"))
-                PasswordErrors.Add("Password must contain at least one lowercase letter.");
+                ModelState.AddModelError("NewUser.Password", "Password must contain at least one lowercase letter.");
 
             if (password.Length > dbMaxPassword)
             {

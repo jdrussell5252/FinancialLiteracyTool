@@ -21,7 +21,6 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Questions
         public int SelectedQuestionTypeID { get; set; }
         public List<string> Choices { get; set; } = new();
         public int? CorrectChoiceIndex { get; set; }
-        public bool? TrueFalseCorrect { get; set; }
 
         public IActionResult OnGet(int id)
         {
@@ -70,41 +69,6 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Questions
             {
                 using (SqlConnection conn = new SqlConnection(AppHelper.GetDBConnectionString()))
                 {
-                    /*conn.Open();
-                    string cmdText = "UPDATE Question SET QuestionText = @QuestionText WHERE QuestionID = @QuestionID;";
-                    SqlCommand cmd = new SqlCommand(cmdText, conn);
-                    cmd.Parameters.AddWithValue("@QuestionText", Questions.QuestionText);
-                    cmd.Parameters.AddWithValue("@QuestionID", id);
-                    cmd.ExecuteNonQuery();
-
-                    string cmdText2 = "UPDATE Question SET AreaID = @AreaID WHERE QuestionID = @QuestionID;";
-                    SqlCommand cmd2 = new SqlCommand(cmdText2, conn);
-                    cmd2.Parameters.AddWithValue("@AreaID", SelectedQuestionAreaID);
-                    cmd2.Parameters.AddWithValue("@QuestionID", id);
-                    //conn.Open();
-                    cmd2.ExecuteNonQuery();
-
-                    string cmdText3 = "UPDATE Question SET QuestionTypeID = @QuestionTypeID WHERE QuestionID = @QuestionID;";
-                    SqlCommand cmd3 = new SqlCommand(cmdText3, conn);
-                    cmd3.Parameters.AddWithValue("@QuestionTypeID", SelectedQuestionTypeID);
-                    cmd3.Parameters.AddWithValue("@QuestionID", id);
-                    //conn.Open();
-                    cmd3.ExecuteNonQuery();
-
-                    string cmdText4 = "UPDATE QuestionChoiceText SET QuestionChoiceText = @QuestionChoiceText WHERE QuestionID = @QuestionID;";
-                    SqlCommand cmd4 = new SqlCommand(cmdText4, conn);
-                    cmd4.Parameters.AddWithValue("@QuestionChoiceText", Questions.QuestionText);
-                    cmd4.Parameters.AddWithValue("@QuestionID", id);
-                    //conn.Open();
-                    cmd4.ExecuteNonQuery();
-
-                    string cmdText5 = "UPDATE IsCorrect SET IsCorrect = @IsCorrect WHERE QuestionID = @QuestionID;";
-                    SqlCommand cmd5 = new SqlCommand(cmdText5, conn);
-                    cmd5.Parameters.AddWithValue("@IsCorrect", IsCo);
-                    cmd5.Parameters.AddWithValue("@QuestionID", id);
-                    //conn.Open();
-                    cmd5.ExecuteNonQuery();*/
-
                     conn.Open();
 
                     // Update main question
@@ -293,7 +257,7 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Questions
                 {
                     Choices.Add(reader["QuestionChoiceText"]?.ToString() ?? "");
 
-                    if (reader["IsCorrect"] != DBNull.Value && Convert.ToBoolean(reader["IsCorrect"]))
+                    if (reader["IsCorrect"] != DBNull.Value && Convert.ToBoolean(reader["IsCorrect"]) == true)
                     {
                         CorrectChoiceIndex = index;
                     }

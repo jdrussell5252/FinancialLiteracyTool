@@ -61,25 +61,29 @@
             </div>
         </div>
 
-        <div class="row mt-2">
-            <div class="col-4">
-                <label class="form-label" id="LabelText">Choice 3:</label>
+        <!-- Fixes modelstate validation issues with truefalse -->
+        @if (Model.SelectedQuestionTypeID == 1)
+        {
+            <div class="row mt-2">
+                <div class="col-4">
+                    <label class="form-label" id="LabelText">Choice 3:</label>
+                </div>
+                <div class="col-12">
+                    <input asp-for="Choices[2]" type="text" class="form-control" />
+                    <span asp-validation-for="Choices[2]" class="text-danger"></span>
+                </div>
             </div>
-            <div class="col-12">
-                <input asp-for="Choices[2]" type="text" class="form-control" />
-                <span asp-validation-for="Choices[2]" class="text-danger"></span>
-            </div>
-        </div>
 
-        <div class="row mt-2">
-            <div class="col-4">
-                <label class="form-label" id="LabelText">Choice 4:</label>
+            <div class="row mt-2">
+                <div class="col-4">
+                    <label class="form-label" id="LabelText">Choice 4:</label>
+                </div>
+                <div class="col-12">
+                    <input asp-for="Choices[3]" type="text" class="form-control" />
+                    <span asp-validation-for="Choices[3]" class="text-danger"></span>
+                </div>
             </div>
-            <div class="col-12">
-                <input asp-for="Choices[3]" type="text" class="form-control" />
-                <span asp-validation-for="Choices[3]" class="text-danger"></span>
-            </div>
-        </div>
+        }
 
         <div class="row mt-2">
             <div class="col-12">
@@ -115,15 +119,15 @@
         </div>
 
         <div class="form-check">
-            <input class="form-check-input" type="radio" asp-for="TrueFalseCorrect" value="true">
+            <input class="form-check-input" type="radio" asp-for="CorrectChoiceIndex" value="0">
             <label class="form-check-label">True</label>
         </div>
         <div class="form-check">
-            <input class="form-check-input" type="radio" asp-for="TrueFalseCorrect" value="false">
+            <input class="form-check-input" type="radio" asp-for="CorrectChoiceIndex" value="1">
             <label class="form-check-label">False</label>
         </div>
 
-        <span asp-validation-for="TrueFalseCorrect" class="text-danger"></span>
+        <span asp-validation-for="CorrectChoiceIndex" class="text-danger"></span>
     </div>
 
     <div class="row my-2">

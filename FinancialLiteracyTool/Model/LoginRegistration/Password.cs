@@ -4,6 +4,7 @@ namespace FinancialLiteracyTool.Model.LoginRegistration
 {
     public class Password
     {
+        [Required(ErrorMessage = "Password is required")]
         public string MyPassword { get; set; }
         [Display(Name = "Confirm Password")]
         [Required(ErrorMessage = "Confirm Password is required")]

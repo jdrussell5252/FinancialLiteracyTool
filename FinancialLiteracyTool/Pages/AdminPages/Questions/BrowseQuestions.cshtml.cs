@@ -68,11 +68,15 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Questions
             using (SqlConnection conn = new SqlConnection(AppHelper.GetDBConnectionString()))
             {
                 conn.Open();
-                string deleteCmdText = "DELETE FROM Question WHERE QuestionID = @QuestionID";
+                string deleteCmdText = "DELETE FROM QuestionChoices WHERE QuestionID = @QuestionID";
                 SqlCommand deleteCmd = new SqlCommand(deleteCmdText, conn);
                 deleteCmd.Parameters.AddWithValue("@QuestionID", id);
                 deleteCmd.ExecuteNonQuery();
 
+                string deleteCmdText2 = "DELETE FROM Question WHERE QuestionID = @QuestionID";
+                SqlCommand deleteCmd2 = new SqlCommand(deleteCmdText2, conn);
+                deleteCmd2.Parameters.AddWithValue("@QuestionID", id);
+                deleteCmd2.ExecuteNonQuery();
             }
 
             return RedirectToPage();

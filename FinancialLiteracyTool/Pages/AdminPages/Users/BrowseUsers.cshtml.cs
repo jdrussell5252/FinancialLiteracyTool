@@ -75,10 +75,15 @@ namespace FinancialLiteracyTool.Pages.AdminPages.Users
             using (SqlConnection conn = new SqlConnection(AppHelper.GetDBConnectionString()))
             {
                 conn.Open();
-                string deleteCmdText = "DELETE FROM SystemUser WHERE SystemUserID = @UserID";
+                string deleteCmdText = "DELETE FROM CoachedUsers WHERE SystemUserID = @UserID";
                 SqlCommand deleteCmd = new SqlCommand(deleteCmdText, conn);
                 deleteCmd.Parameters.AddWithValue("@UserID", id);
                 deleteCmd.ExecuteNonQuery();
+
+                string deleteCmdText2 = "DELETE FROM SystemUser WHERE SystemUserID = @UserID";
+                SqlCommand deleteCmd2 = new SqlCommand(deleteCmdText2, conn);
+                deleteCmd2.Parameters.AddWithValue("@UserID", id);
+                deleteCmd2.ExecuteNonQuery();
 
             }
 
